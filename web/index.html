@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ECG联合设计交互展示</title>
+    <meta
+      name="description"
+      content="ECG采样率、ADC有效位数与抗噪性能联合设计项目的交互展示页面。"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -19,6 +23,9 @@
         <a href="../report/final_report.pdf" target="_blank" rel="noreferrer">PDF报告</a>
         <a href="../report/final_report.docx">DOCX报告</a>
         <a href="../README.md" target="_blank" rel="noreferrer">README</a>
+        <a href="https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness" target="_blank" rel="noreferrer"
+          >GitHub</a
+        >
       </nav>
     </header>
 
@@ -31,15 +38,37 @@
             项目使用MIT-BIH Arrhythmia Database和MIT-BIH Noise Stress Test Database，
             对5种采样率、6种ADC有效位数组成的30种配置进行全因子评估。
           </p>
+          <div class="hero-tags" aria-label="实验规模">
+            <span>48条MIT-BIH记录</span>
+            <span>12条NSTDB噪声记录</span>
+            <span>30组全因子配置</span>
+            <span>8张结果图</span>
+          </div>
         </div>
         <div class="hero-panel" aria-label="推荐配置摘要">
-          <span class="status-pill">Final audit: PASS · 11/11</span>
-          <div class="recommendation">
-            <span id="heroFs">360 Hz</span>
-            <span class="divider">/</span>
-            <span id="heroBits">6 bit</span>
+          <div>
+            <span class="status-pill">Final audit: PASS · 11/11</span>
+            <div class="recommendation">
+              <span id="heroFs">360 Hz</span>
+              <span class="divider">/</span>
+              <span id="heroBits">6 bit</span>
+            </div>
+            <p>推荐配置</p>
           </div>
-          <p>推荐配置</p>
+          <div class="hero-evidence" aria-label="推荐配置证据">
+            <div>
+              <span>Clean F1</span>
+              <strong>99.305%</strong>
+            </div>
+            <div>
+              <span>F1下降</span>
+              <strong>0.086 pp</strong>
+            </div>
+            <div>
+              <span>码率降低</span>
+              <strong>45.5%</strong>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -62,8 +91,22 @@
         </article>
       </section>
 
+      <section class="section-intro" aria-label="交互分析摘要">
+        <div>
+          <p class="eyebrow">Interactive Analysis</p>
+          <h2>从配置到证据的可视化分析台</h2>
+        </div>
+        <p>
+          选择采样率和ADC有效位数后，页面会同步更新推荐指标、Clean条件矩阵、SNR抗噪曲线和候选配置表。
+        </p>
+      </section>
+
       <section class="workspace" aria-label="交互分析工作区">
         <aside class="control-rail">
+          <div class="rail-title">
+            <p class="eyebrow">Controls</p>
+            <h3>参数筛选</h3>
+          </div>
           <div class="control-group">
             <label for="fsSelect">采样率</label>
             <select id="fsSelect"></select>
@@ -114,6 +157,11 @@
               <span id="heatmapUnit" class="badge">%</span>
             </div>
             <div id="heatmap" class="heatmap" role="img" aria-label="干净信号配置热力图"></div>
+            <div class="scale-note">
+              <span id="scaleGoodLabel">较优</span>
+              <span class="scale-bar" aria-hidden="true"></span>
+              <span id="scaleWeakLabel">较弱</span>
+            </div>
           </article>
 
           <article class="panel chart-panel">

@@ -101,6 +101,8 @@ function renderHeatmap() {
   const min = Math.min(...values);
   const max = Math.max(...values);
   el("heatmapUnit").textContent = meta.unit || "value";
+  el("scaleGoodLabel").textContent = meta.better === "high" ? "高值更优" : "低值更优";
+  el("scaleWeakLabel").textContent = meta.better === "high" ? "低值较弱" : "高值较弱";
 
   const cells = [`<div class="heat-label">fs \\ bit</div>`];
   bitValues.forEach((bit) => cells.push(`<div class="heat-label">${bit}</div>`));
