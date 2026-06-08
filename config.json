@@ -1,0 +1,22 @@
+{
+  "source_fs_hz": 360,
+  "target_fs_hz": [360, 250, 180, 125, 100],
+  "effective_bits": [11, 10, 9, 8, 7, 6],
+  "full_scale_mv_pp": 10.0,
+  "front_end_band_hz": [0.5, 40.0],
+  "front_end_order": 4,
+  "match_tolerances_ms": [150, 75],
+  "clean_eval_start_s": 300.0,
+  "interval_boundary_margin_s": 0.2,
+  "noise_start_s": 300.0,
+  "noise_on_s": 120.0,
+  "noise_off_s": 120.0,
+  "bootstrap_iterations": 1000,
+  "bootstrap_seed": 20260606,
+  "recommended_constraints": {
+    "clean_pooled_f1_min_pct": 99.0,
+    "clean_f1_drop_max_pp": 0.5,
+    "noise_f1_drop_max_pp": 2.0,
+    "median_timing_error_max_ms": 20.0
+  }
+}

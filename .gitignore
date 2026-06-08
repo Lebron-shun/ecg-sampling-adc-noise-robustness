@@ -1,0 +1,36 @@
+# Local raw data downloaded from PhysioNet
+data/
+raw_data/
+physionet/
+
+# Python environments and caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated local scratch files
+tmp/
+temp/
+*.log
+*.tmp
+*_screenshot*.png
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Microsoft Office lock files
+~$*
+
+# Local secrets
+.env
+.env.*
+!.env.example

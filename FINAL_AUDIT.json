@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "checks_passed": 11,
+  "checks_total": 11,
+  "recommended_configuration": {
+    "target_fs_hz": 360,
+    "bits": 6,
+    "raw_bitrate_bps": 2160,
+    "bitrate_reduction_pct": 45.45454545454546,
+    "clean_pooled_f1_pct": 99.30487464189267,
+    "worst_noise_f1_drop_pp_at_snr_ge_6": 0.3533157421122013
+  },
+  "checks": [
+    {
+      "requirement": "Open-source data completeness",
+      "passed": true,
+      "evidence": "{\"total_records\": 60, \"mitdb_records\": 48, \"nstdb_records\": 12, \"all_360_hz\": true, \"all_nonempty\": true, \"failures\": 0}"
+    },
+    {
+      "requirement": "Clean full-factorial coverage",
+      "passed": true,
+      "evidence": "rows=2880, records=48, configurations=30"
+    },
+    {
+      "requirement": "Noise full-factorial coverage",
+      "passed": true,
+      "evidence": "rows=1440, records=12, aggregate SNR-config rows=180"
+    },
+    {
+      "requirement": "One-to-one metric count conservation",
+      "passed": true,
+      "evidence": "All clean and noise rows satisfy TP+FN=reference beats and TP+FP=detected beats"
+    },
+    {
+      "requirement": "No experiment failures",
+      "passed": true,
+      "evidence": "failures_mitdb.json={} and failures_nstdb.json={}"
+    },
+    {
+      "requirement": "Recommended configuration satisfies declared constraints",
+      "passed": true,
+      "evidence": "360 Hz/6 bit; clean F1=99.305%; worst >=6 dB relative noise drop=0.353 pp"
+    },
+    {
+      "requirement": "Required result figures",
+      "passed": true,
+      "evidence": "8/8 figures exist"
+    },
+    {
+      "requirement": "Final PDF report and visual content",
+      "passed": true,
+      "evidence": "pages=9, nonempty_pages=9, sha256=ba8dea8256d514622fbf46337db3d2ea85950847122a35fd2219e117ec6c6a75"
+    },
+    {
+      "requirement": "Editable DOCX report",
+      "passed": true,
+      "evidence": "paragraphs=77, tables=5, embedded_images=8, sha256=feeeb6db63520203061c0087f120c43fed49397df3ab56b86a012a4ba747f8ae"
+    },
+    {
+      "requirement": "Reproducible source code",
+      "passed": true,
+      "evidence": "8 required scripts, config.json, and requirements.txt present"
+    },
+    {
+      "requirement": "Course-guide scoring coverage",
+      "passed": true,
+      "evidence": "All required course-report sections found in final PDF text"
+    }
+  ]
+}
