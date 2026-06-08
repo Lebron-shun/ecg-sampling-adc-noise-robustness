@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checks_passed": 11,
-  "checks_total": 11,
+  "checks_passed": 17,
+  "checks_total": 17,
   "recommended_configuration": {
     "target_fs_hz": 360,
     "bits": 6,
@@ -49,12 +49,32 @@
     {
       "requirement": "Final PDF report and visual content",
       "passed": true,
-      "evidence": "pages=9, nonempty_pages=9, sha256=ba8dea8256d514622fbf46337db3d2ea85950847122a35fd2219e117ec6c6a75"
+      "evidence": "pages=13, nonempty_pages=13, sha256=b64bc3b8cdb4ae0571a7b8f69163969b54559abd19001814f54746ad9752b886"
     },
     {
       "requirement": "Editable DOCX report",
       "passed": true,
-      "evidence": "paragraphs=77, tables=5, embedded_images=8, sha256=feeeb6db63520203061c0087f120c43fed49397df3ab56b86a012a4ba747f8ae"
+      "evidence": "paragraphs=117, tables=12, embedded_images=8, sha256=b2d1dbb65930790fe5a42527843bf5ff0cefeb76f0e54d08edff5ea707acaccc"
+    },
+    {
+      "requirement": "No raw personal-info placeholders in generated reports",
+      "passed": true,
+      "evidence": "Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders"
+    },
+    {
+      "requirement": "Numbered tables and figures in report",
+      "passed": true,
+      "evidence": "tables=8/8, figures=8/8"
+    },
+    {
+      "requirement": "Appendix engineering package coverage",
+      "passed": true,
+      "evidence": "Appendix A-D include parameters, scripts, result index, GitHub and Pages links"
+    },
+    {
+      "requirement": "GitHub and interactive showcase links in report",
+      "passed": true,
+      "evidence": "Repository and GitHub Pages URLs found in generated reports"
     },
     {
       "requirement": "Reproducible source code",
@@ -64,7 +84,17 @@
     {
       "requirement": "Course-guide scoring coverage",
       "passed": true,
-      "evidence": "All required course-report sections found in final PDF text"
+      "evidence": "All required course-report sections and appendices found in generated report text"
+    },
+    {
+      "requirement": "README course scoring and showcase entry",
+      "passed": true,
+      "evidence": "README highlights scoring alignment, report, audit, and GitHub Pages entry"
+    },
+    {
+      "requirement": "Interactive web rubric and deliverables section",
+      "passed": true,
+      "evidence": "web/index.html contains rubric evidence matrix and deliverable links"
     }
   ]
 }

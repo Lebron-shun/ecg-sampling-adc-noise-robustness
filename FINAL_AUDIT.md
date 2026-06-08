@@ -1,7 +1,7 @@
 # Final Project Completion Audit
 
 **Overall status:** PASS  
-**Checks:** 11/11 passed  
+**Checks:** 17/17 passed  
 **Recommended configuration:** 360 Hz / 6 bit
 
 | Requirement | Status | Evidence |
@@ -13,7 +13,13 @@
 | No experiment failures | PASS | failures_mitdb.json={} and failures_nstdb.json={} |
 | Recommended configuration satisfies declared constraints | PASS | 360 Hz/6 bit; clean F1=99.305%; worst >=6 dB relative noise drop=0.353 pp |
 | Required result figures | PASS | 8/8 figures exist |
-| Final PDF report and visual content | PASS | pages=9, nonempty_pages=9, sha256=ba8dea8256d514622fbf46337db3d2ea85950847122a35fd2219e117ec6c6a75 |
-| Editable DOCX report | PASS | paragraphs=77, tables=5, embedded_images=8, sha256=feeeb6db63520203061c0087f120c43fed49397df3ab56b86a012a4ba747f8ae |
+| Final PDF report and visual content | PASS | pages=13, nonempty_pages=13, sha256=b64bc3b8cdb4ae0571a7b8f69163969b54559abd19001814f54746ad9752b886 |
+| Editable DOCX report | PASS | paragraphs=117, tables=12, embedded_images=8, sha256=b2d1dbb65930790fe5a42527843bf5ff0cefeb76f0e54d08edff5ea707acaccc |
+| No raw personal-info placeholders in generated reports | PASS | Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders |
+| Numbered tables and figures in report | PASS | tables=8/8, figures=8/8 |
+| Appendix engineering package coverage | PASS | Appendix A-D include parameters, scripts, result index, GitHub and Pages links |
+| GitHub and interactive showcase links in report | PASS | Repository and GitHub Pages URLs found in generated reports |
 | Reproducible source code | PASS | 8 required scripts, config.json, and requirements.txt present |
-| Course-guide scoring coverage | PASS | All required course-report sections found in final PDF text |
+| Course-guide scoring coverage | PASS | All required course-report sections and appendices found in generated report text |
+| README course scoring and showcase entry | PASS | README highlights scoring alignment, report, audit, and GitHub Pages entry |
+| Interactive web rubric and deliverables section | PASS | web/index.html contains rubric evidence matrix and deliverable links |

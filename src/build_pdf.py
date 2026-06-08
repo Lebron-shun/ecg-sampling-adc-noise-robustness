@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 from PIL import Image as PILImage
 from reportlab.lib import colors
@@ -23,7 +25,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from build_report import fmt, read_inputs, summary_text
+from build_report import fmt, markdown_report, read_inputs, summary_text
 from project_core import FIGURES_DIR, REPORT_DIR, ensure_project_dirs
 
 
@@ -136,6 +138,10 @@ def p(text: str, style: ParagraphStyle) -> Paragraph:
     return Paragraph(text.replace("\n", "<br/>"), style)
 
 
+def p_md(text: str, style: ParagraphStyle) -> Paragraph:
+    return Paragraph(escape(text).replace("\n", "<br/>"), style)
+
+
 def figure(filename: str, caption: str, styles_map: dict, max_width=6.5 * inch, max_height=6.2 * inch):
     path = FIGURES_DIR / filename
     with PILImage.open(path) as image:
@@ -168,6 +174,121 @@ def styled_table(headers: list[str], rows: list[list[str]], widths: list[float],
         )
     )
     return table
+
+
+def styled_table_md(headers: list[str], rows: list[list[str]], widths: list[float], styles_map: dict) -> Table:
+    data = [[p(f"<b>{escape(header)}</b>", styles_map["table_header"]) for header in headers]]
+    data.extend([[p_md(str(value), styles_map["small"]) for value in row] for row in rows])
+    table = Table(data, colWidths=[width * inch for width in widths], repeatRows=1, hAlign="CENTER")
+    table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), BLUE),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, -1), "STSong-Light"),
+                ("ALIGN", (1, 1), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("GRID", (0, 0), (-1, -1), 0.35, colors.HexColor("#B7C6D8")),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F4F8FC")]),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+    return table
+
+
+def clean_markdown_text(text: str) -> str:
+    text = text.replace("**", "")
+    text = text.replace("`", "")
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1（\2）", text)
+    return text.strip()
+
+
+def split_markdown_row(line: str) -> list[str]:
+    cells = line.strip().strip("|").split("|")
+    return [clean_markdown_text(cell.strip()) for cell in cells]
+
+
+def markdown_table_widths(column_count: int) -> list[float]:
+    presets = {
+        2: [2.3, 4.2],
+        3: [1.55, 2.2, 2.75],
+        4: [1.25, 1.75, 1.75, 1.75],
+        5: [1.35, 1.05, 1.25, 1.25, 1.55],
+    }
+    if column_count in presets:
+        return presets[column_count]
+    return [6.5 / column_count] * column_count
+
+
+def add_markdown_table(story: list, lines: list[str], index: int, styles_map: dict) -> int:
+    headers = split_markdown_row(lines[index])
+    rows: list[list[str]] = []
+    index += 2
+    while index < len(lines) and lines[index].strip().startswith("|"):
+        rows.append(split_markdown_row(lines[index]))
+        index += 1
+    story.append(styled_table_md(headers, rows, markdown_table_widths(len(headers)), styles_map))
+    story.append(Spacer(1, 7))
+    return index
+
+
+def markdown_to_story(markdown: str, styles_map: dict) -> list:
+    story: list = []
+    lines = markdown.splitlines()
+    try:
+        index = lines.index("## 摘要")
+    except ValueError:
+        index = 0
+
+    while index < len(lines):
+        line = lines[index].strip()
+        if not line:
+            index += 1
+            continue
+        if line.startswith("### "):
+            story.append(p_md(clean_markdown_text(line[4:]), styles_map["h2"]))
+            index += 1
+            continue
+        if line.startswith("## "):
+            if line.startswith("## 4 "):
+                story.append(PageBreak())
+            story.append(p_md(clean_markdown_text(line[3:]), styles_map["h1"]))
+            index += 1
+            continue
+        image_match = re.match(r"!\[(.*?)\]\((.*?)\)", line)
+        if image_match:
+            caption, image_path = image_match.groups()
+            story.append(figure(Path(image_path).name, clean_markdown_text(caption), styles_map, max_height=4.75 * inch))
+            index += 1
+            continue
+        if line.startswith("|") and index + 1 < len(lines) and "---" in lines[index + 1]:
+            index = add_markdown_table(story, lines, index, styles_map)
+            continue
+        if line.startswith("- "):
+            items = []
+            while index < len(lines) and lines[index].strip().startswith("- "):
+                items.append(clean_markdown_text(lines[index].strip()[2:]))
+                index += 1
+            story.extend(bullet_list(items, styles_map))
+            continue
+        ordered_match = re.match(r"\d+\.\s+(.*)", line)
+        if ordered_match:
+            items = []
+            while index < len(lines):
+                match = re.match(r"\d+\.\s+(.*)", lines[index].strip())
+                if not match:
+                    break
+                items.append(clean_markdown_text(match.group(1)))
+                index += 1
+            story.extend(bullet_list(items, styles_map))
+            continue
+        story.append(p_md(clean_markdown_text(line), styles_map["body"]))
+        index += 1
+    return story
 
 
 def bullet_list(items: list[str], styles_map: dict) -> list[Paragraph]:
@@ -226,11 +347,16 @@ def build_pdf(path: Path) -> None:
                 st,
             ),
             Spacer(1, 0.55 * inch),
-            p("姓名：____________　学号：____________　班级：____________", st["subtitle"]),
+            p("姓名：提交前填写　学号：提交前填写　班级：提交前填写", st["subtitle"]),
             p("完成日期：2026年6月", st["subtitle"]),
+            p("GitHub：https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness", st["small"]),
+            p("交互展示：https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/", st["small"]),
             PageBreak(),
         ]
     )
+    story.extend(markdown_to_story(markdown_report(data, s), st))
+    doc.build(story, onFirstPage=page_decor, onLaterPages=page_decor)
+    return
 
     story.append(p("摘要", st["h1"]))
     story.append(

@@ -30,6 +30,14 @@ def check(name: str, condition: bool, evidence: str) -> dict:
     return {"requirement": name, "passed": bool(condition), "evidence": evidence}
 
 
+def docx_text(document: Document) -> str:
+    parts = [paragraph.text for paragraph in document.paragraphs]
+    for table in document.tables:
+        for row in table.rows:
+            parts.extend(cell.text for cell in row.cells)
+    return "\n".join(parts)
+
+
 def main() -> None:
     checks = []
     validation = json.loads((RESULTS_DIR / "data_validation_summary.json").read_text(encoding="utf-8"))
@@ -131,24 +139,64 @@ def main() -> None:
     pdf_path = REPORT_DIR / "final_report.pdf"
     reader = PdfReader(pdf_path)
     page_text = [(page.extract_text() or "").strip() for page in reader.pages]
+    pdf_text = "\n".join(page_text)
     checks.append(
         check(
             "Final PDF report and visual content",
-            len(reader.pages) == 9
+            len(reader.pages) >= 9
             and all(len(text) > 20 for text in page_text)
-            and all(keyword in "\n".join(page_text) for keyword in ["引言", "系统设计", "方法", "结果展示", "讨论", "结论", "参考文献", "附录"]),
+            and all(keyword in pdf_text for keyword in ["引言", "系统设计", "方法", "结果展示", "讨论", "结论", "参考文献", "附录"]),
             f"pages={len(reader.pages)}, nonempty_pages={sum(bool(text) for text in page_text)}, sha256={sha256(pdf_path)}",
         )
     )
     docx_path = REPORT_DIR / "final_report.docx"
     doc = Document(docx_path)
+    editable_text = docx_text(doc)
     with zipfile.ZipFile(docx_path) as archive:
         images = [name for name in archive.namelist() if name.startswith("word/media/")]
     checks.append(
         check(
             "Editable DOCX report",
-            len(doc.paragraphs) >= 70 and len(doc.tables) >= 5 and len(images) >= 8,
+            len(doc.paragraphs) >= 90 and len(doc.tables) >= 8 and len(images) >= 8,
             f"paragraphs={len(doc.paragraphs)}, tables={len(doc.tables)}, embedded_images={len(images)}, sha256={sha256(docx_path)}",
+        )
+    )
+    md_path = REPORT_DIR / "final_report.md"
+    md_text = md_path.read_text(encoding="utf-8")
+    combined_report_text = "\n".join([md_text, pdf_text, editable_text])
+    placeholder_tokens = ["____________", "姓名：________", "学号：________", "班级：________"]
+    checks.append(
+        check(
+            "No raw personal-info placeholders in generated reports",
+            not any(token in combined_report_text for token in placeholder_tokens)
+            and "提交前填写" in combined_report_text,
+            "Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders",
+        )
+    )
+    expected_table_labels = [f"表{index}" for index in range(1, 9)]
+    expected_figure_labels = [f"图{index}" for index in range(1, 9)]
+    checks.append(
+        check(
+            "Numbered tables and figures in report",
+            all(label in combined_report_text for label in expected_table_labels + expected_figure_labels),
+            f"tables={sum(label in combined_report_text for label in expected_table_labels)}/8, "
+            f"figures={sum(label in combined_report_text for label in expected_figure_labels)}/8",
+        )
+    )
+    checks.append(
+        check(
+            "Appendix engineering package coverage",
+            all(label in combined_report_text for label in ["附录A", "附录B", "附录C", "附录D"])
+            and all(keyword in combined_report_text for keyword in ["核心参数", "关键脚本", "结果文件索引", "GitHub仓库", "交互展示页"]),
+            "Appendix A-D include parameters, scripts, result index, GitHub and Pages links",
+        )
+    )
+    checks.append(
+        check(
+            "GitHub and interactive showcase links in report",
+            "https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness" in combined_report_text
+            and "https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/" in combined_report_text,
+            "Repository and GitHub Pages URLs found in generated reports",
         )
     )
     required_scripts = [
@@ -174,10 +222,28 @@ def main() -> None:
         check(
             "Course-guide scoring coverage",
             all(
-                keyword in "\n".join(page_text)
-                for keyword in ["医学应用背景", "系统设计原理", "方法与实现过程", "结果展示与性能评价", "讨论与改进分析", "参考文献", "复现说明"]
+                keyword in combined_report_text
+                for keyword in ["医学应用背景", "系统设计原理", "方法与实现过程", "结果展示与性能评价", "讨论与改进分析", "参考文献", "附录A", "附录D"]
             ),
-            "All required course-report sections found in final PDF text",
+            "All required course-report sections and appendices found in generated report text",
+        )
+    )
+    readme_text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    web_text = (PROJECT_ROOT / "web" / "index.html").read_text(encoding="utf-8")
+    checks.append(
+        check(
+            "README course scoring and showcase entry",
+            all(keyword in readme_text for keyword in ["课程评分对照", "GitHub Pages", "FINAL_AUDIT.md", "report/final_report.pdf"])
+            and "https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/" in readme_text,
+            "README highlights scoring alignment, report, audit, and GitHub Pages entry",
+        )
+    )
+    checks.append(
+        check(
+            "Interactive web rubric and deliverables section",
+            all(keyword in web_text for keyword in ["Course Rubric", "课程评分对照", "项目交付物", "最终PDF报告", "GitHub仓库"])
+            and all(keyword in web_text for keyword in ["医学应用背景", "系统设计原理", "方法与实现过程", "结果与性能评价", "附录资料"]),
+            "web/index.html contains rubric evidence matrix and deliverable links",
         )
     )
 

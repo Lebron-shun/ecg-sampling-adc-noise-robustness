@@ -47,7 +47,7 @@
         </div>
         <div class="hero-panel" aria-label="推荐配置摘要">
           <div>
-            <span class="status-pill">Final audit: PASS · 11/11</span>
+              <span class="status-pill">Final audit: PASS · 17/17</span>
             <div class="recommendation">
               <span id="heroFs">360 Hz</span>
               <span class="divider">/</span>
@@ -89,6 +89,66 @@
           <span>最坏噪声下降</span>
           <strong id="metricNoiseDrop">--</strong>
         </article>
+      </section>
+
+      <section class="rubric-section" aria-label="课程评分对照与项目交付物">
+        <div class="section-intro rubric-intro">
+          <div>
+            <p class="eyebrow">Course Rubric</p>
+            <h2>指导书评分项已经映射到报告、结果和展示材料</h2>
+          </div>
+          <p>
+            本页把老师最关心的完整性证据放在交互分析前：医学场景、系统设计、方法实现、结果评价、讨论改进、图表规范、引用格式和附录资料均有对应交付物。
+          </p>
+        </div>
+        <div class="rubric-grid">
+          <article>
+            <span>5分</span>
+            <strong>医学应用背景</strong>
+            <p>可穿戴ECG长时监护、R峰/RR任务边界、应用需求-工程约束-指标表。</p>
+          </article>
+          <article>
+            <span>6分</span>
+            <strong>系统设计原理</strong>
+            <p>虚拟采集链路、模拟前端参数化模型、ADC量化与数据率计算。</p>
+          </article>
+          <article>
+            <span>6分</span>
+            <strong>方法与实现过程</strong>
+            <p>MIT-BIH/NSTDB、XQRS固定检测器、全因子脚本和本人实现工作说明。</p>
+          </article>
+          <article>
+            <span>6分</span>
+            <strong>结果与性能评价</strong>
+            <p>30组配置、噪声压力测试、推荐配置达标表和失败原因分析。</p>
+          </article>
+          <article>
+            <span>3分</span>
+            <strong>讨论与改进</strong>
+            <p>医学、工程、算法、数据四类限制，明确不外推临床诊断和真实功耗。</p>
+          </article>
+          <article>
+            <span>2分</span>
+            <strong>图表与系统表达</strong>
+            <p>图1-图8、表1-表8统一编号，网页提供可交互的证据入口。</p>
+          </article>
+          <article>
+            <span>1分</span>
+            <strong>引用与格式</strong>
+            <p>PhysioNet、MIT-BIH、NSTDB、WFDB与QRS检测文献统一列入报告。</p>
+          </article>
+          <article>
+            <span>1分</span>
+            <strong>附录资料</strong>
+            <p>核心参数、关键脚本、结果文件索引、GitHub与Pages链接。</p>
+          </article>
+        </div>
+        <div class="deliverable-row" aria-label="项目交付物">
+          <a href="../report/final_report.pdf" target="_blank" rel="noreferrer">最终PDF报告</a>
+          <a href="../report/final_report.docx">可编辑DOCX</a>
+          <a href="../FINAL_AUDIT.md" target="_blank" rel="noreferrer">完整性审核</a>
+          <a href="https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness" target="_blank" rel="noreferrer">GitHub仓库</a>
+        </div>
       </section>
 
       <section class="section-intro" aria-label="交互分析摘要">
