@@ -353,7 +353,7 @@ main {
 
 .metrics-strip article,
 .panel,
-.rubric-section,
+.project-section,
 .figure-viewer,
 .control-rail {
   border: 1px solid var(--line);
@@ -385,7 +385,7 @@ main {
   line-height: 1.05;
 }
 
-.rubric-section {
+.project-section {
   margin: 0 0 24px;
   padding: 18px 0 20px;
   border-width: 1px 0;
@@ -394,17 +394,17 @@ main {
   box-shadow: none;
 }
 
-.rubric-intro {
+.project-intro {
   margin: 0 0 14px;
 }
 
-.rubric-grid {
+.project-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
 }
 
-.rubric-grid article {
+.project-grid article {
   min-width: 0;
   min-height: 118px;
   padding: 12px;
@@ -413,7 +413,7 @@ main {
   background: #fff;
 }
 
-.rubric-grid span {
+.project-grid span {
   display: inline-flex;
   align-items: center;
   min-height: 23px;
@@ -425,7 +425,7 @@ main {
   font-weight: 650;
 }
 
-.rubric-grid strong {
+.project-grid strong {
   display: block;
   margin-top: 9px;
   color: var(--ink);
@@ -434,7 +434,7 @@ main {
   line-height: 1.32;
 }
 
-.rubric-grid p {
+.project-grid p {
   margin: 7px 0 0;
   color: var(--muted);
   font-size: 12px;
@@ -816,12 +816,25 @@ tbody tr.is-selected {
   box-shadow: var(--shadow-soft);
 }
 
+.figure-stage {
+  display: grid;
+  width: 100%;
+  height: clamp(360px, 52vw, 720px);
+  place-items: center;
+  background: #fff;
+}
+
+.figure-stage.is-loading img {
+  opacity: 0.55;
+}
+
 .figure-viewer img {
   display: block;
   width: 100%;
-  max-height: 720px;
+  height: 100%;
   object-fit: contain;
   background: #fff;
+  transition: opacity 0.12s ease;
 }
 
 .figure-viewer figcaption {
@@ -850,7 +863,7 @@ footer {
     grid-template-columns: 1fr;
   }
 
-  .rubric-grid {
+  .project-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -986,7 +999,7 @@ footer {
   }
 
   .hero-panel,
-  .rubric-section,
+  .project-section,
   .panel,
   .control-rail {
     width: 100%;
@@ -1007,7 +1020,7 @@ footer {
   .metrics-strip,
   .control-rail,
   .detail-grid,
-  .rubric-grid {
+  .project-grid {
     grid-template-columns: 1fr;
   }
 
@@ -1038,10 +1051,14 @@ footer {
     flex: 1 0 auto;
   }
 
+  .figure-stage {
+    height: min(68vh, 360px);
+  }
+
   .workspace,
   .analysis-grid,
   .metrics-strip,
-  .rubric-grid {
+  .project-grid {
     width: 100%;
     max-width: 100%;
   }

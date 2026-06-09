@@ -24,10 +24,12 @@ const state = {
   bits: DATA.recommended.bits,
   metric: "pooled_f1_pct",
   tableFilter: "all",
+  figureIndex: 3,
 };
 
 const el = (id) => document.getElementById(id);
 const fmt = (value, digits = 2) => Number(value).toFixed(digits);
+const figureCache = new Map();
 
 function configKey(row) {
   return `${Number(row.target_fs_hz)} Hz / ${Number(row.bits)} bit`;
@@ -226,6 +228,42 @@ function renderFigures() {
   el("figureTabs").innerHTML = tabs;
 }
 
+function preloadFigures() {
+  figures.forEach(([, src]) => {
+    const image = new Image();
+    image.decoding = "async";
+    const ready = new Promise((resolve) => {
+      image.onload = () => resolve(image);
+      image.onerror = () => resolve(image);
+    }).then((loadedImage) => {
+      if (loadedImage.decode) {
+        return loadedImage.decode().catch(() => loadedImage);
+      }
+      return loadedImage;
+    });
+    image.src = src;
+    figureCache.set(src, { image, ready });
+  });
+}
+
+async function selectFigure(index) {
+  if (index === state.figureIndex) return;
+  const [, src, caption] = figures[index];
+  const image = el("figureImage");
+  const stage = el("figureStage");
+  const tabs = [...el("figureTabs").querySelectorAll("button")];
+  state.figureIndex = index;
+  tabs.forEach((button) => button.classList.toggle("active", Number(button.dataset.index) === index));
+  stage.classList.add("is-loading");
+  const cached = figureCache.get(src);
+  if (cached) await cached.ready;
+  if (state.figureIndex !== index) return;
+  image.src = src;
+  image.alt = figures[index][0];
+  el("figureCaption").textContent = caption;
+  requestAnimationFrame(() => stage.classList.remove("is-loading"));
+}
+
 function updateAll() {
   el("fsSelect").value = state.fs;
   el("bitsSelect").value = state.bits;
@@ -271,17 +309,13 @@ function bindEvents() {
   el("figureTabs").addEventListener("click", (event) => {
     const target = event.target.closest("button");
     if (!target) return;
-    const index = Number(target.dataset.index);
-    const [, src, caption] = figures[index];
-    el("figureImage").src = src;
-    el("figureCaption").textContent = caption;
-    [...el("figureTabs").querySelectorAll("button")].forEach((button) => button.classList.remove("active"));
-    target.classList.add("active");
+    selectFigure(Number(target.dataset.index));
   });
 }
 
 setOptions();
 renderHero();
 renderFigures();
+preloadFigures();
 bindEvents();
 updateAll();

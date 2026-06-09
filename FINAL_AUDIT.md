@@ -22,4 +22,4 @@
 | Reproducible source code | PASS | 8 required scripts, config.json, and requirements.txt present |
 | Course-guide scoring coverage | PASS | All required course-report sections and appendices found in generated report text |
 | README course scoring and showcase entry | PASS | README highlights scoring alignment, report, audit, and GitHub Pages entry |
-| Interactive web rubric and deliverables section | PASS | web/index.html contains rubric evidence matrix and deliverable links |
+| Interactive web project showcase and figure performance | PASS | web/index.html presents the project, not scoring; figure gallery preloads decoded images |

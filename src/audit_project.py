@@ -238,12 +238,15 @@ def main() -> None:
             "README highlights scoring alignment, report, audit, and GitHub Pages entry",
         )
     )
+    web_js = (PROJECT_ROOT / "web" / "app.js").read_text(encoding="utf-8")
     checks.append(
         check(
-            "Interactive web rubric and deliverables section",
-            all(keyword in web_text for keyword in ["Course Rubric", "课程评分对照", "项目交付物", "最终PDF报告", "GitHub仓库"])
-            and all(keyword in web_text for keyword in ["医学应用背景", "系统设计原理", "方法与实现过程", "结果与性能评价", "附录资料"]),
-            "web/index.html contains rubric evidence matrix and deliverable links",
+            "Interactive web project showcase and figure performance",
+            all(keyword in web_text for keyword in ["Project Overview", "项目概览与交付物", "PDF报告", "项目README", "GitHub仓库"])
+            and all(keyword in web_text for keyword in ["可穿戴ECG长时监护", "采样率 × ADC位数", "MIT-BIH与NSTDB", "实验图集"])
+            and all(keyword in web_js for keyword in ["preloadFigures", "decode", "figureCache", "selectFigure"])
+            and all(keyword not in web_text for keyword in ["Course Rubric", "课程评分对照", "5分", "6分", "17/17"]),
+            "web/index.html presents the project, not scoring; figure gallery preloads decoded images",
         )
     )
 

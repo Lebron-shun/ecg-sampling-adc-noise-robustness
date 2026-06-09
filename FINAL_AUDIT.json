@@ -92,9 +92,9 @@
       "evidence": "README highlights scoring alignment, report, audit, and GitHub Pages entry"
     },
     {
-      "requirement": "Interactive web rubric and deliverables section",
+      "requirement": "Interactive web project showcase and figure performance",
       "passed": true,
-      "evidence": "web/index.html contains rubric evidence matrix and deliverable links"
+      "evidence": "web/index.html presents the project, not scoring; figure gallery preloads decoded images"
     }
   ]
 }
