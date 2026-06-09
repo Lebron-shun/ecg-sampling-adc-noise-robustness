@@ -16,6 +16,8 @@ __pycache__/
 # Generated local scratch files
 tmp/
 temp/
+report/
+private_submission/
 results/monitoring_cache/
 *.log
 *.tmp

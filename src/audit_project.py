@@ -2,40 +2,33 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
-import zipfile
+import subprocess
 from pathlib import Path
 
 import pandas as pd
-from docx import Document
-from pypdf import PdfReader
 
-from project_core import FIGURES_DIR, PROJECT_ROOT, REPORT_DIR, RESULTS_DIR
+from project_core import FIGURES_DIR, PROJECT_ROOT, RESULTS_DIR
 
 
 AUDIT_JSON = PROJECT_ROOT / "FINAL_AUDIT.json"
 AUDIT_MD = PROJECT_ROOT / "FINAL_AUDIT.md"
 
 
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(1024 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def check(name: str, condition: bool, evidence: str) -> dict:
     return {"requirement": name, "passed": bool(condition), "evidence": evidence}
 
 
-def docx_text(document: Document) -> str:
-    parts = [paragraph.text for paragraph in document.paragraphs]
-    for table in document.tables:
-        for row in table.rows:
-            parts.extend(cell.text for cell in row.cells)
-    return "\n".join(parts)
+def tracked_files() -> list[str]:
+    result = subprocess.run(
+        ["git", "ls-files"],
+        cwd=PROJECT_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
 def main() -> None:
@@ -176,75 +169,61 @@ def main() -> None:
             "figure_09_monitoring_metrics exported as PNG/SVG/PDF with SVG text elements",
         )
     )
-    pdf_path = REPORT_DIR / "final_report.pdf"
-    reader = PdfReader(pdf_path)
-    page_text = [(page.extract_text() or "").strip() for page in reader.pages]
-    pdf_text = "\n".join(page_text)
-    checks.append(
-        check(
-            "Final PDF report and visual content",
-            len(reader.pages) >= 9
-            and all(len(text) > 20 for text in page_text)
-            and all(keyword in pdf_text for keyword in ["引言", "系统设计", "方法", "结果展示", "讨论", "结论", "参考文献", "附录"]),
-            f"pages={len(reader.pages)}, nonempty_pages={sum(bool(text) for text in page_text)}, sha256={sha256(pdf_path)}",
-        )
+    tracked = tracked_files()
+    readme_text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    web_text = (PROJECT_ROOT / "web" / "index.html").read_text(encoding="utf-8")
+    web_js = (PROJECT_ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    web_data = (PROJECT_ROOT / "web" / "data.js").read_text(encoding="utf-8")
+    public_text = "\n".join(
+        [
+            readme_text,
+            web_text,
+            web_js,
+            web_data,
+            (PROJECT_ROOT / "index.html").read_text(encoding="utf-8"),
+        ]
     )
-    docx_path = REPORT_DIR / "final_report.docx"
-    doc = Document(docx_path)
-    editable_text = docx_text(doc)
-    with zipfile.ZipFile(docx_path) as archive:
-        images = [name for name in archive.namelist() if name.startswith("word/media/")]
     checks.append(
         check(
-            "Editable DOCX report",
-            len(doc.paragraphs) >= 90 and len(doc.tables) >= 10 and len(images) >= 9,
-            f"paragraphs={len(doc.paragraphs)}, tables={len(doc.tables)}, embedded_images={len(images)}, sha256={sha256(docx_path)}",
-        )
-    )
-    md_path = REPORT_DIR / "final_report.md"
-    md_text = md_path.read_text(encoding="utf-8")
-    combined_report_text = "\n".join([md_text, pdf_text, editable_text])
-    placeholder_tokens = ["____________", "姓名：________", "学号：________", "班级：________"]
-    checks.append(
-        check(
-            "No raw personal-info placeholders in generated reports",
-            not any(token in combined_report_text for token in placeholder_tokens)
-            and "提交前填写" in combined_report_text,
-            "Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders",
-        )
-    )
-    expected_table_labels = [f"表{index}" for index in range(1, 11)]
-    expected_figure_labels = [f"图{index}" for index in range(1, 10)]
-    checks.append(
-        check(
-            "Numbered tables and figures in report",
-            all(label in combined_report_text for label in expected_table_labels + expected_figure_labels),
-            f"tables={sum(label in combined_report_text for label in expected_table_labels)}/10, "
-            f"figures={sum(label in combined_report_text for label in expected_figure_labels)}/9",
+            "Public repository excludes generated course reports",
+            not any(path == "report" or path.startswith("report/") for path in tracked)
+            and "report/" in (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8")
+            and "private_submission/" in (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8"),
+            "No report/ files are tracked; report/ and private_submission/ are ignored",
         )
     )
     checks.append(
         check(
-            "RR/HRV monitoring methods and boundaries in report",
-            all(keyword in combined_report_text for keyword in ["RR间期", "瞬时心率", "SDNN", "RMSSD", "HRV技术可用性", "不解释疾病风险"])
-            and all(keyword in combined_report_text for keyword in ["不能外推到ST段分析", "不能外推到", "临床决策"]),
-            "Report includes RR/HR/SDNN/RMSSD methodology and keeps non-diagnostic boundary",
+            "Public README and web hide report links",
+            all(keyword not in readme_text for keyword in ["final_report", "PDF报告", "DOCX报告", "report/final_report"])
+            and all(keyword not in web_text for keyword in ["final_report", "PDF报告", "DOCX报告", "../report/"]),
+            "README and web/index.html do not expose final_report PDF/DOCX links",
         )
     )
     checks.append(
         check(
-            "Appendix engineering package coverage",
-            all(label in combined_report_text for label in ["附录A", "附录B", "附录C", "附录D"])
-            and all(keyword in combined_report_text for keyword in ["核心参数", "关键脚本", "结果文件索引", "GitHub仓库", "交互展示页"]),
-            "Appendix A-D include parameters, scripts, result index, GitHub and Pages links",
+            "Public showcase has no personal-info or scoring UI",
+            all(keyword not in public_text for keyword in ["学号：", "班级：", "姓名：", "提交前填写"])
+            and all(keyword not in web_text for keyword in ["Course Rubric", "课程评分对照", "5分", "6分", "17/17"]),
+            "Public README/web/data do not expose personal-info fields or scoring UI",
         )
     )
     checks.append(
         check(
-            "GitHub and interactive showcase links in report",
-            "https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness" in combined_report_text
-            and "https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/" in combined_report_text,
-            "Repository and GitHub Pages URLs found in generated reports",
+            "Public project package coverage",
+            all(keyword in readme_text for keyword in ["RR/HRV", "GitHub Pages", "FINAL_AUDIT.md", "monitoring_analysis.py"])
+            and "https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/" in readme_text
+            and all(keyword in web_text for keyword in ["Project Overview", "Monitoring Scenarios", "医学监护场景", "项目README", "GitHub仓库", "实验图集"])
+            and all(keyword in web_data for keyword in ["monitoring", "scenarios", "hr_rr_monitoring", "hrv_trend"]),
+            "README, web showcase, and web data expose project materials without report links",
+        )
+    )
+    checks.append(
+        check(
+            "Public monitoring scope and non-diagnostic boundary",
+            all(keyword in public_text for keyword in ["RR", "HRV", "SDNN", "RMSSD"])
+            and all(keyword in public_text for keyword in ["不解释疾病风险", "不评价ST段", "临床决策"]),
+            "Public materials include monitoring extension and non-diagnostic boundary",
         )
     )
     required_scripts = [
@@ -270,34 +249,12 @@ def main() -> None:
     )
     checks.append(
         check(
-            "Course-guide report coverage",
-            all(
-                keyword in combined_report_text
-                for keyword in ["医学应用背景", "系统设计原理", "方法与实现过程", "结果展示与性能评价", "讨论与改进分析", "参考文献", "附录A", "附录D"]
-            ),
-            "All required course-report sections and appendices found in generated report text",
-        )
-    )
-    readme_text = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
-    web_text = (PROJECT_ROOT / "web" / "index.html").read_text(encoding="utf-8")
-    checks.append(
-        check(
-            "README monitoring and showcase entry",
-            all(keyword in readme_text for keyword in ["RR/HRV", "GitHub Pages", "FINAL_AUDIT.md", "report/final_report.pdf", "monitoring_analysis.py"])
-            and "https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/" in readme_text,
-            "README highlights monitoring extension, report, audit, and GitHub Pages entry",
-        )
-    )
-    web_js = (PROJECT_ROOT / "web" / "app.js").read_text(encoding="utf-8")
-    web_data = (PROJECT_ROOT / "web" / "data.js").read_text(encoding="utf-8")
-    checks.append(
-        check(
             "Interactive web project showcase and figure performance",
-            all(keyword in web_text for keyword in ["Project Overview", "Monitoring Scenarios", "医学监护场景", "PDF报告", "项目README", "GitHub仓库"])
+            all(keyword in web_text for keyword in ["Project Overview", "Monitoring Scenarios", "医学监护场景", "项目README", "GitHub仓库"])
             and all(keyword in web_text for keyword in ["可穿戴ECG长时监护", "采样率 × ADC位数", "MIT-BIH与NSTDB", "实验图集"])
             and all(keyword in web_js for keyword in ["preloadFigures", "decode", "figureCache", "selectFigure", "renderScenarios", "renderMonitoring"])
             and all(keyword in web_data for keyword in ["monitoring", "scenarios", "hr_rr_monitoring", "hrv_trend"])
-            and all(keyword not in web_text for keyword in ["Course Rubric", "课程评分对照", "5分", "6分", "17/17"]),
+            and all(keyword not in web_text for keyword in ["Course Rubric", "课程评分对照", "PDF报告", "DOCX报告", "5分", "6分", "17/17"]),
             "web/index.html presents monitoring scenarios, not scoring; figure gallery preloads decoded PNG images",
         )
     )

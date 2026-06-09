@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 from pathlib import Path
@@ -26,6 +27,25 @@ GRAY = "657786"
 WHITE = "FFFFFF"
 BODY_FONT = "SimSun"
 HEADING_FONT = "Microsoft YaHei"
+
+
+DEFAULT_STUDENT = {
+    "name": "提交前填写",
+    "student_id": "提交前填写",
+    "class_name": "提交前填写",
+}
+
+
+def student_info(name: str | None = None, student_id: str | None = None, class_name: str | None = None) -> dict[str, str]:
+    return {
+        "name": name or DEFAULT_STUDENT["name"],
+        "student_id": student_id or DEFAULT_STUDENT["student_id"],
+        "class_name": class_name or DEFAULT_STUDENT["class_name"],
+    }
+
+
+def student_line(student: dict[str, str]) -> str:
+    return f"姓名：{student['name']}　学号：{student['student_id']}　班级：{student['class_name']}"
 
 
 def read_inputs() -> dict:
@@ -124,7 +144,8 @@ def summary_text(data: dict) -> dict[str, str]:
     }
 
 
-def markdown_report(data: dict, s: dict[str, str]) -> str:
+def markdown_report(data: dict, s: dict[str, str], student: dict[str, str] | None = None) -> str:
+    student = student or student_info()
     chosen = data["chosen"]
     status_labels = {
         "recommended": "推荐",
@@ -189,7 +210,7 @@ def markdown_report(data: dict, s: dict[str, str]) -> str:
     return f"""# 面向可穿戴心电监护的ECG采样率、ADC有效位数与抗噪性能联合设计
 
 **课程：** 生物医学电子（2）  
-**姓名：** 提交前填写　**学号：** 提交前填写　**班级：** 提交前填写  
+**{student_line(student)}**  
 **完成日期：** 2026年6月  
 **项目仓库：** https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness  
 **交互展示：** https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/
@@ -723,7 +744,8 @@ def setup_styles(doc: Document) -> None:
     set_run_font(run, HEADING_FONT, 8.5, GRAY)
 
 
-def add_cover(doc: Document, s: dict[str, str]) -> None:
+def add_cover(doc: Document, s: dict[str, str], student: dict[str, str] | None = None) -> None:
+    student = student or student_info()
     p = doc.add_paragraph()
     p.paragraph_format.space_before = Pt(70)
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -757,7 +779,7 @@ def add_cover(doc: Document, s: dict[str, str]) -> None:
     p = doc.add_paragraph()
     p.paragraph_format.space_before = Pt(42)
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = p.add_run("姓名：提交前填写　学号：提交前填写　班级：提交前填写")
+    run = p.add_run(student_line(student))
     set_run_font(run, BODY_FONT, 11, DARK)
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -774,11 +796,11 @@ def add_cover(doc: Document, s: dict[str, str]) -> None:
     p.add_run().add_break(WD_BREAK.PAGE)
 
 
-def build_docx(data: dict, s: dict[str, str], path: Path) -> None:
+def build_docx(data: dict, s: dict[str, str], path: Path, student: dict[str, str] | None = None) -> None:
     doc = Document()
     setup_styles(doc)
-    add_cover(doc, s)
-    add_markdown_content(doc, markdown_report(data, s))
+    add_cover(doc, s, student)
+    add_markdown_content(doc, markdown_report(data, s, student))
     doc.save(path)
     return
 
@@ -991,15 +1013,28 @@ def build_docx(data: dict, s: dict[str, str], path: Path) -> None:
     doc.save(path)
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path, default=REPORT_DIR)
+    parser.add_argument("--basename", default="final_report")
+    parser.add_argument("--name")
+    parser.add_argument("--student-id")
+    parser.add_argument("--class-name")
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     ensure_project_dirs()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     data = read_inputs()
     s = summary_text(data)
-    markdown = markdown_report(data, s)
-    md_path = REPORT_DIR / "final_report.md"
-    docx_path = REPORT_DIR / "final_report.docx"
+    student = student_info(args.name, args.student_id, args.class_name)
+    markdown = markdown_report(data, s, student)
+    md_path = args.output_dir / f"{args.basename}.md"
+    docx_path = args.output_dir / f"{args.basename}.docx"
     md_path.write_text(markdown, encoding="utf-8")
-    build_docx(data, s, docx_path)
+    build_docx(data, s, docx_path, student)
     print(f"Wrote {md_path}")
     print(f"Wrote {docx_path}")
 

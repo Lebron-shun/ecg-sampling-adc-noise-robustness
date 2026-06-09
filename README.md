@@ -10,7 +10,6 @@
 
 - GitHub Pages: https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/
 - 本地入口: [web/index.html](web/index.html)
-- 最终报告: [report/final_report.pdf](report/final_report.pdf) / [report/final_report.docx](report/final_report.docx)
 - 完整性审核: [FINAL_AUDIT.md](FINAL_AUDIT.md)
 
 ```text
@@ -39,7 +38,6 @@ web/index.html
 ├── src/                         # 数据下载、实验、分析、报告生成和审核脚本
 ├── results/                     # 逐记录和聚合结果表
 ├── figures/                     # 自动生成的实验图
-├── report/                      # 最终课程报告 PDF / DOCX / Markdown
 ├── web/                         # 交互展示网页
 ├── data_manifest/               # 原始数据清单和校验信息
 ├── DATA_SOURCES.md              # 数据来源说明
@@ -85,14 +83,14 @@ python src/audit_project.py
 
 ## 主要输出
 
-- [report/final_report.pdf](report/final_report.pdf)：最终课程报告。
-- [report/final_report.docx](report/final_report.docx)：可编辑报告。
 - [FINAL_AUDIT.md](FINAL_AUDIT.md)：完整性审核。
 - [results/recommended_config.json](results/recommended_config.json)：推荐配置指标。
 - [results/monitoring_summary.csv](results/monitoring_summary.csv)：代表配置RR/HRV监护指标。
 - [results/scenario_recommendations.json](results/scenario_recommendations.json)：医学监护场景推荐。
 - [figures/figure_09_monitoring_metrics.png](figures/figure_09_monitoring_metrics.png)：RR、心率和HRV指标图。
 - [web/index.html](web/index.html)：交互展示页面。
+
+课程提交用的完整报告不在公开仓库中分发，可通过 `src/build_report.py` 和 `src/build_pdf.py` 在本地生成。
 
 ## License
 

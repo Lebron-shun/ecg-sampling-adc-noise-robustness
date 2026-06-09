@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -25,7 +26,7 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from build_report import fmt, markdown_report, read_inputs, summary_text
+from build_report import fmt, markdown_report, read_inputs, student_info, student_line, summary_text
 from project_core import FIGURES_DIR, REPORT_DIR, ensure_project_dirs
 
 
@@ -310,10 +311,11 @@ def page_decor(canvas, doc):
     canvas.restoreState()
 
 
-def build_pdf(path: Path) -> None:
+def build_pdf(path: Path, student: dict[str, str] | None = None) -> None:
     ensure_project_dirs()
     data = read_inputs()
     s = summary_text(data)
+    student = student or student_info()
     st = styles()
     doc = SimpleDocTemplate(
         str(path),
@@ -347,14 +349,14 @@ def build_pdf(path: Path) -> None:
                 st,
             ),
             Spacer(1, 0.55 * inch),
-            p("姓名：提交前填写　学号：提交前填写　班级：提交前填写", st["subtitle"]),
+            p(student_line(student), st["subtitle"]),
             p("完成日期：2026年6月", st["subtitle"]),
             p("GitHub：https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness", st["small"]),
             p("交互展示：https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/", st["small"]),
             PageBreak(),
         ]
     )
-    story.extend(markdown_to_story(markdown_report(data, s), st))
+    story.extend(markdown_to_story(markdown_report(data, s, student), st))
     doc.build(story, onFirstPage=page_decor, onLaterPages=page_decor)
     return
 
@@ -614,9 +616,21 @@ def build_pdf(path: Path) -> None:
     doc.build(story, onFirstPage=page_decor, onLaterPages=page_decor)
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", type=Path, default=REPORT_DIR)
+    parser.add_argument("--basename", default="final_report")
+    parser.add_argument("--name")
+    parser.add_argument("--student-id")
+    parser.add_argument("--class-name")
+    return parser.parse_args()
+
+
 def main() -> None:
-    path = REPORT_DIR / "final_report.pdf"
-    build_pdf(path)
+    args = parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    path = args.output_dir / f"{args.basename}.pdf"
+    build_pdf(path, student_info(args.name, args.student_id, args.class_name))
     print(f"Wrote {path}")
 
 

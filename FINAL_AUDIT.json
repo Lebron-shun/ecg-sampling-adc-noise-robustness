@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checks_passed": 20,
-  "checks_total": 20,
+  "checks_passed": 16,
+  "checks_total": 16,
   "recommended_configuration": {
     "target_fs_hz": 360,
     "bits": 6,
@@ -57,54 +57,34 @@
       "evidence": "figure_09_monitoring_metrics exported as PNG/SVG/PDF with SVG text elements"
     },
     {
-      "requirement": "Final PDF report and visual content",
+      "requirement": "Public repository excludes generated course reports",
       "passed": true,
-      "evidence": "pages=15, nonempty_pages=15, sha256=7636cc61d4b53ffc664608ab221b0794c19390328d323305cc8c3aab91f87f72"
+      "evidence": "No report/ files are tracked; report/ and private_submission/ are ignored"
     },
     {
-      "requirement": "Editable DOCX report",
+      "requirement": "Public README and web hide report links",
       "passed": true,
-      "evidence": "paragraphs=129, tables=14, embedded_images=9, sha256=3a2ef2cf06470b2f0dd3eb9b9d55f2d70b8954a47aca25ab680437f9a930d3b5"
+      "evidence": "README and web/index.html do not expose final_report PDF/DOCX links"
     },
     {
-      "requirement": "No raw personal-info placeholders in generated reports",
+      "requirement": "Public showcase has no personal-info or scoring UI",
       "passed": true,
-      "evidence": "Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders"
+      "evidence": "Public README/web/data do not expose personal-info fields or scoring UI"
     },
     {
-      "requirement": "Numbered tables and figures in report",
+      "requirement": "Public project package coverage",
       "passed": true,
-      "evidence": "tables=10/10, figures=9/9"
+      "evidence": "README, web showcase, and web data expose project materials without report links"
     },
     {
-      "requirement": "RR/HRV monitoring methods and boundaries in report",
+      "requirement": "Public monitoring scope and non-diagnostic boundary",
       "passed": true,
-      "evidence": "Report includes RR/HR/SDNN/RMSSD methodology and keeps non-diagnostic boundary"
-    },
-    {
-      "requirement": "Appendix engineering package coverage",
-      "passed": true,
-      "evidence": "Appendix A-D include parameters, scripts, result index, GitHub and Pages links"
-    },
-    {
-      "requirement": "GitHub and interactive showcase links in report",
-      "passed": true,
-      "evidence": "Repository and GitHub Pages URLs found in generated reports"
+      "evidence": "Public materials include monitoring extension and non-diagnostic boundary"
     },
     {
       "requirement": "Reproducible source code",
       "passed": true,
       "evidence": "10 required scripts, config.json, and requirements.txt present"
-    },
-    {
-      "requirement": "Course-guide report coverage",
-      "passed": true,
-      "evidence": "All required course-report sections and appendices found in generated report text"
-    },
-    {
-      "requirement": "README monitoring and showcase entry",
-      "passed": true,
-      "evidence": "README highlights monitoring extension, report, audit, and GitHub Pages entry"
     },
     {
       "requirement": "Interactive web project showcase and figure performance",
