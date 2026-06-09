@@ -49,12 +49,12 @@
     {
       "requirement": "Final PDF report and visual content",
       "passed": true,
-      "evidence": "pages=13, nonempty_pages=13, sha256=b64bc3b8cdb4ae0571a7b8f69163969b54559abd19001814f54746ad9752b886"
+      "evidence": "pages=13, nonempty_pages=13, sha256=fbd1db8dc8070cccfc918026da4d9badd83956387aaff78800f9eba393b42658"
     },
     {
       "requirement": "Editable DOCX report",
       "passed": true,
-      "evidence": "paragraphs=117, tables=12, embedded_images=8, sha256=b2d1dbb65930790fe5a42527843bf5ff0cefeb76f0e54d08edff5ea707acaccc"
+      "evidence": "paragraphs=117, tables=12, embedded_images=8, sha256=ad6b8a88716d220885d4e8e9f23bec69d61dfb9cb5ced93a84ea49ce8b97b7fe"
     },
     {
       "requirement": "No raw personal-info placeholders in generated reports",

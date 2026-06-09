@@ -9,14 +9,14 @@ const metrics = {
 };
 
 const figures = [
-  ["系统框图", "../figures/figure_01_system_diagram.png", "虚拟可穿戴ECG采集与R峰检测系统框图。"],
-  ["实验流程", "../figures/figure_02_experiment_workflow.png", "数据下载、预处理、重采样、量化、检测和统计分析流程。"],
-  ["波形对比", "../figures/figure_03_waveform_comparison.png", "不同采样率和ADC位数下的代表性ECG波形。"],
-  ["Clean热力图", "../figures/figure_04_clean_heatmaps.png", "干净条件下30种配置的全因子性能热力图。"],
-  ["抗噪曲线", "../figures/figure_05_noise_robustness.png", "标准运动伪影条件下的SNR鲁棒性评估。"],
-  ["Pareto权衡", "../figures/figure_06_pareto_tradeoff.png", "检测性能与原始数据率之间的Pareto权衡。"],
-  ["严重噪声", "../figures/figure_07_severe_noise_heatmap.png", "低SNR场景下不同配置的失效风险。"],
-  ["记录分布", "../figures/figure_08_record_distribution.png", "逐记录性能分布与异常记录情况。"],
+  ["系统框图", "../figures/figure_01_system_diagram.svg", "虚拟可穿戴ECG采集与R峰检测系统框图。"],
+  ["实验流程", "../figures/figure_02_experiment_workflow.svg", "数据下载、预处理、重采样、量化、检测和统计分析流程。"],
+  ["波形对比", "../figures/figure_03_waveform_comparison.svg", "不同采样率和ADC位数下的代表性ECG波形。"],
+  ["Clean热力图", "../figures/figure_04_clean_heatmaps.svg", "干净条件下30种配置的全因子性能热力图。"],
+  ["抗噪曲线", "../figures/figure_05_noise_robustness.svg", "标准运动伪影条件下的SNR鲁棒性评估。"],
+  ["Pareto权衡", "../figures/figure_06_pareto_tradeoff.svg", "检测性能与原始数据率之间的Pareto权衡。"],
+  ["严重噪声", "../figures/figure_07_severe_noise_heatmap.svg", "低SNR场景下不同配置的失效风险。"],
+  ["记录分布", "../figures/figure_08_record_distribution.svg", "逐记录性能分布与异常记录情况。"],
 ];
 
 const state = {

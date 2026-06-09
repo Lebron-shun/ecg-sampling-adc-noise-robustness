@@ -13,8 +13,8 @@
 | No experiment failures | PASS | failures_mitdb.json={} and failures_nstdb.json={} |
 | Recommended configuration satisfies declared constraints | PASS | 360 Hz/6 bit; clean F1=99.305%; worst >=6 dB relative noise drop=0.353 pp |
 | Required result figures | PASS | 8/8 figures exist |
-| Final PDF report and visual content | PASS | pages=13, nonempty_pages=13, sha256=b64bc3b8cdb4ae0571a7b8f69163969b54559abd19001814f54746ad9752b886 |
-| Editable DOCX report | PASS | paragraphs=117, tables=12, embedded_images=8, sha256=b2d1dbb65930790fe5a42527843bf5ff0cefeb76f0e54d08edff5ea707acaccc |
+| Final PDF report and visual content | PASS | pages=13, nonempty_pages=13, sha256=fbd1db8dc8070cccfc918026da4d9badd83956387aaff78800f9eba393b42658 |
+| Editable DOCX report | PASS | paragraphs=117, tables=12, embedded_images=8, sha256=ad6b8a88716d220885d4e8e9f23bec69d61dfb9cb5ced93a84ea49ce8b97b7fe |
 | No raw personal-info placeholders in generated reports | PASS | Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders |
 | Numbered tables and figures in report | PASS | tables=8/8, figures=8/8 |
 | Appendix engineering package coverage | PASS | Appendix A-D include parameters, scripts, result index, GitHub and Pages links |

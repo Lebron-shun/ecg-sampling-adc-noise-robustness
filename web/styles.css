@@ -189,7 +189,7 @@ main {
   border-radius: 8px;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 55%, rgba(255, 255, 255, 0.62) 100%),
-    url("../figures/figure_03_waveform_comparison.png") right center / auto 112% no-repeat,
+    url("../figures/figure_03_waveform_comparison.svg") right center / auto 112% no-repeat,
     var(--surface);
   box-shadow: var(--shadow-soft);
 }
@@ -971,7 +971,7 @@ footer {
     padding: 18px;
     background:
       linear-gradient(90deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%),
-      url("../figures/figure_03_waveform_comparison.png") center / cover no-repeat,
+      url("../figures/figure_03_waveform_comparison.svg") center / cover no-repeat,
       var(--surface);
   }
 

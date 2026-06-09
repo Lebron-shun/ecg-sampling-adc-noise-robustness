@@ -28,42 +28,61 @@ matplotlib.use("Agg")
 from matplotlib import pyplot as plt
 
 COLORS = {
-    "blue": "#276FBF",
-    "teal": "#1B998B",
-    "orange": "#F28E2B",
-    "red": "#D64550",
-    "purple": "#7E57C2",
-    "gray": "#657786",
-    "light": "#EAF1F8",
-    "dark": "#183153",
+    "blue_main": "#0F4D92",
+    "blue_mid": "#3775BA",
+    "blue_soft": "#B4C0E4",
+    "teal": "#42949E",
+    "green": "#8BCF8B",
+    "green_soft": "#DDF3DE",
+    "red": "#B64342",
+    "red_soft": "#F6CFCB",
+    "gold": "#C58A22",
+    "neutral_light": "#D8D8D8",
+    "neutral_mid": "#767676",
+    "neutral_dark": "#4D4D4D",
+    "neutral_black": "#272727",
+    "panel_bg": "#F7F8FA",
 }
 
 
 def configure_matplotlib() -> None:
     candidates = [
+        "Arial",
+        "Helvetica",
         "Microsoft YaHei",
         "SimHei",
         "Noto Sans CJK SC",
-        "Arial Unicode MS",
         "DejaVu Sans",
+        "sans-serif",
     ]
     plt.rcParams.update(
         {
             "font.family": "sans-serif",
             "font.sans-serif": candidates,
+            "svg.fonttype": "none",
+            "pdf.fonttype": 42,
+            "font.size": 8,
+            "axes.linewidth": 0.8,
             "axes.unicode_minus": False,
             "axes.spines.top": False,
             "axes.spines.right": False,
-            "axes.titleweight": "bold",
-            "axes.titlecolor": COLORS["dark"],
-            "axes.labelcolor": COLORS["dark"],
-            "xtick.color": COLORS["gray"],
-            "ytick.color": COLORS["gray"],
-            "grid.color": "#D7E0EA",
-            "grid.alpha": 0.7,
+            "axes.titleweight": "regular",
+            "axes.titlecolor": COLORS["neutral_black"],
+            "axes.labelcolor": COLORS["neutral_black"],
+            "xtick.color": COLORS["neutral_dark"],
+            "ytick.color": COLORS["neutral_dark"],
+            "grid.color": "#E6E8EC",
+            "grid.alpha": 0.75,
+            "grid.linewidth": 0.55,
+            "legend.frameon": False,
+            "legend.fontsize": 7,
+            "xtick.major.width": 0.8,
+            "ytick.major.width": 0.8,
+            "xtick.major.size": 3,
+            "ytick.major.size": 3,
             "figure.facecolor": "white",
             "savefig.facecolor": "white",
-            "savefig.dpi": 220,
+            "savefig.dpi": 600,
         }
     )
 
@@ -318,7 +337,47 @@ def select_recommended(
     return candidates.sort_values(["raw_bitrate_bps", "target_fs_hz", "bits"]), chosen
 
 
-def annotate_heatmap(ax, matrix: pd.DataFrame, fmt: str) -> None:
+def add_panel_label(ax, label: str, x: float = -0.08, y: float = 1.04) -> None:
+    ax.text(
+        x,
+        y,
+        label,
+        transform=ax.transAxes,
+        ha="left",
+        va="bottom",
+        fontsize=9,
+        fontweight="bold",
+        color=COLORS["neutral_black"],
+    )
+
+
+def style_axis(ax, grid_axis: str | bool = "y") -> None:
+    ax.tick_params(labelsize=7)
+    ax.xaxis.label.set_size(8)
+    ax.yaxis.label.set_size(8)
+    ax.title.set_size(8.5)
+    if grid_axis:
+        ax.grid(True, axis=grid_axis)
+    else:
+        ax.grid(False)
+    for spine in ax.spines.values():
+        spine.set_color(COLORS["neutral_dark"])
+
+
+def style_colorbar(colorbar) -> None:
+    colorbar.ax.tick_params(labelsize=7, width=0.7, length=2.5)
+    colorbar.outline.set_linewidth(0.6)
+    colorbar.ax.yaxis.label.set_size(7)
+
+
+def heat_text_color(image, value: float) -> str:
+    rgba = image.cmap(image.norm(value))
+    r, g, b = rgba[:3]
+    luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    return COLORS["neutral_black"] if luminance > 0.58 else "white"
+
+
+def annotate_heatmap(ax, matrix: pd.DataFrame, fmt: str, image) -> None:
     for y, row in enumerate(matrix.to_numpy()):
         for x, value in enumerate(row):
             ax.text(
@@ -327,19 +386,22 @@ def annotate_heatmap(ax, matrix: pd.DataFrame, fmt: str) -> None:
                 format(value, fmt),
                 ha="center",
                 va="center",
-                fontsize=8.5,
-                color="white" if value < np.nanmedian(matrix.to_numpy()) else COLORS["dark"],
+                fontsize=6.3,
+                color=heat_text_color(image, float(value)),
             )
 
 
 def save_figure(fig, name: str) -> None:
-    path = FIGURES_DIR / name
-    fig.savefig(path, bbox_inches="tight", dpi=220)
+    png_path = FIGURES_DIR / name
+    stem = png_path.with_suffix("")
+    fig.savefig(png_path, bbox_inches="tight", dpi=600)
+    fig.savefig(stem.with_suffix(".svg"), bbox_inches="tight")
+    fig.savefig(stem.with_suffix(".pdf"), bbox_inches="tight")
     plt.close(fig)
 
 
 def plot_system_diagram() -> None:
-    fig, ax = plt.subplots(figsize=(12, 3.2))
+    fig, ax = plt.subplots(figsize=(7.2, 2.25))
     ax.axis("off")
     labels = [
         "Surface\nelectrodes",
@@ -349,9 +411,10 @@ def plot_system_diagram() -> None:
         "Digital\nQRS detector",
         "R peaks, RR,\nheart rate",
     ]
-    x_positions = np.linspace(0.06, 0.94, len(labels))
+    x_positions = np.linspace(0.075, 0.925, len(labels))
     for index, (x, label) in enumerate(zip(x_positions, labels)):
-        color = COLORS["blue"] if index < 4 else COLORS["teal"]
+        edge = COLORS["blue_main"] if index < 4 else COLORS["teal"]
+        face = "#F3F6FB" if index < 4 else "#EEF7F6"
         ax.text(
             x,
             0.5,
@@ -359,17 +422,17 @@ def plot_system_diagram() -> None:
             transform=ax.transAxes,
             ha="center",
             va="center",
-            fontsize=10,
-            color="white",
-            bbox=dict(boxstyle="round,pad=0.55", fc=color, ec="none"),
+            fontsize=7.2,
+            color=COLORS["neutral_black"],
+            bbox=dict(boxstyle="round,pad=0.42", fc=face, ec=edge, lw=0.9),
         )
         if index < len(labels) - 1:
             ax.annotate(
                 "",
-                xy=(x_positions[index + 1] - 0.075, 0.5),
-                xytext=(x + 0.075, 0.5),
+                xy=(x_positions[index + 1] - 0.055, 0.5),
+                xytext=(x + 0.055, 0.5),
                 xycoords=ax.transAxes,
-                arrowprops=dict(arrowstyle="->", lw=2, color=COLORS["gray"]),
+                arrowprops=dict(arrowstyle="->", lw=0.9, color=COLORS["neutral_mid"]),
             )
     ax.text(
         0.5,
@@ -377,14 +440,15 @@ def plot_system_diagram() -> None:
         "Implemented as a reproducible virtual acquisition and signal-processing system",
         transform=ax.transAxes,
         ha="center",
-        color=COLORS["gray"],
-        fontsize=9,
+        color=COLORS["neutral_mid"],
+        fontsize=6.8,
     )
+    add_panel_label(ax, "a", x=0.0, y=0.93)
     save_figure(fig, "figure_01_system_diagram.png")
 
 
 def plot_workflow_diagram() -> None:
-    fig, ax = plt.subplots(figsize=(12, 3.6))
+    fig, ax = plt.subplots(figsize=(7.2, 2.6))
     ax.axis("off")
     labels = [
         "MIT-BIH / NSTDB\npublic ECG",
@@ -395,7 +459,7 @@ def plot_workflow_diagram() -> None:
         "One-to-one\nannotation match",
         "Metrics +\nPareto selection",
     ]
-    xs = np.linspace(0.04, 0.96, len(labels))
+    xs = np.linspace(0.055, 0.945, len(labels))
     for index, (x, label) in enumerate(zip(xs, labels)):
         ax.text(
             x,
@@ -404,17 +468,17 @@ def plot_workflow_diagram() -> None:
             transform=ax.transAxes,
             ha="center",
             va="center",
-            fontsize=9,
-            color=COLORS["dark"],
-            bbox=dict(boxstyle="round,pad=0.5", fc=COLORS["light"], ec=COLORS["blue"]),
+            fontsize=6.7,
+            color=COLORS["neutral_black"],
+            bbox=dict(boxstyle="round,pad=0.34", fc="#F7F8FA", ec=COLORS["blue_mid"], lw=0.8),
         )
         if index < len(labels) - 1:
             ax.annotate(
                 "",
-                xy=(xs[index + 1] - 0.06, 0.55),
-                xytext=(x + 0.06, 0.55),
+                xy=(xs[index + 1] - 0.046, 0.55),
+                xytext=(x + 0.046, 0.55),
                 xycoords=ax.transAxes,
-                arrowprops=dict(arrowstyle="->", lw=1.7, color=COLORS["blue"]),
+                arrowprops=dict(arrowstyle="->", lw=0.8, color=COLORS["blue_mid"]),
             )
     ax.text(
         0.5,
@@ -422,9 +486,10 @@ def plot_workflow_diagram() -> None:
         "Full factorial design: 5 sampling rates x 6 effective resolutions; clean and standardized motion-artifact evaluation",
         transform=ax.transAxes,
         ha="center",
-        fontsize=9,
-        color=COLORS["gray"],
+        fontsize=6.7,
+        color=COLORS["neutral_mid"],
     )
+    add_panel_label(ax, "a", x=0.0, y=0.94)
     save_figure(fig, "figure_02_experiment_workflow.png")
 
 
@@ -433,85 +498,118 @@ def plot_waveform_comparison() -> None:
     record = wfdb.rdrecord(str(record_path), sampfrom=300 * 360, sampto=305 * 360, channels=[0])
     x = front_end_filter(record.p_signal[:, 0], 360, (0.5, 40.0), 4)
     configurations = [(360, 11), (180, 8), (100, 6)]
-    fig, axes = plt.subplots(3, 1, figsize=(11, 7), sharex=False)
-    for ax, (fs, bits) in zip(axes, configurations):
+    fig, axes = plt.subplots(3, 1, figsize=(7.2, 4.6), sharex=True)
+    line_colors = [COLORS["neutral_black"], COLORS["blue_mid"], COLORS["teal"]]
+    for idx, (ax, (fs, bits), color) in enumerate(zip(axes, configurations, line_colors)):
         y = resample_signal(x, 360, fs)
         q = quantize_fixed_range(y, bits, 10.0)
         t = np.arange(len(q.values_mv)) / fs
-        ax.plot(t, q.values_mv, lw=1.05, color=COLORS["blue"])
+        ax.plot(t, q.values_mv, lw=0.75, color=color)
         ax.set_ylabel("mV")
-        ax.set_title(f"{fs} Hz / {bits} bit   (LSB = {q.lsb_mv * 1000:.1f} µV)", loc="left", fontsize=10)
-        ax.grid(True)
+        ax.set_title(f"{fs} Hz / {bits} bit  |  LSB {q.lsb_mv * 1000:.1f} µV", loc="left", pad=3)
+        style_axis(ax, grid_axis="y")
         ax.set_xlim(0.5, 4.5)
+        add_panel_label(ax, chr(ord("a") + idx), x=-0.055, y=1.02)
     axes[-1].set_xlabel("Time (s)")
-    fig.suptitle("Representative ECG after virtual acquisition", fontsize=14, fontweight="bold")
-    fig.tight_layout()
+    fig.suptitle("Representative ECG after virtual acquisition", fontsize=9.5, fontweight="regular", y=0.995)
+    fig.tight_layout(h_pad=1.05)
     save_figure(fig, "figure_03_waveform_comparison.png")
 
 
 def plot_clean_heatmaps(clean_agg: pd.DataFrame) -> None:
     f1 = clean_agg.pivot(index="target_fs_hz", columns="bits", values="pooled_f1_pct").sort_index(ascending=False)
     timing = clean_agg.pivot(index="target_fs_hz", columns="bits", values="median_timing_error_ms").sort_index(ascending=False)
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.2))
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.65))
     for ax, matrix, title, cmap, fmt in (
-        (axes[0], f1, "Pooled F1 (%)", "viridis", ".3f"),
-        (axes[1], timing, "Median R-peak timing error (ms)", "magma_r", ".2f"),
+        (axes[0], f1, "Pooled F1 (%)", "YlGnBu", ".2f"),
+        (axes[1], timing, "Median R-peak timing error (ms)", "YlOrBr", ".2f"),
     ):
         image = ax.imshow(matrix.to_numpy(), aspect="auto", cmap=cmap)
         ax.set_xticks(range(len(matrix.columns)), matrix.columns)
         ax.set_yticks(range(len(matrix.index)), matrix.index)
         ax.set_xlabel("Effective resolution (bit)")
         ax.set_ylabel("Sampling rate (Hz)")
-        ax.set_title(title)
-        annotate_heatmap(ax, matrix, fmt)
-        fig.colorbar(image, ax=ax, shrink=0.82)
-    fig.suptitle("Clean-condition full-factorial results", fontsize=14, fontweight="bold")
-    fig.tight_layout()
+        ax.set_title(title, pad=5)
+        style_axis(ax, grid_axis=False)
+        annotate_heatmap(ax, matrix, fmt, image)
+        cbar = fig.colorbar(image, ax=ax, shrink=0.76, pad=0.02)
+        cbar.set_label(title.split("(")[-1].replace(")", ""))
+        style_colorbar(cbar)
+    add_panel_label(axes[0], "a")
+    add_panel_label(axes[1], "b")
+    fig.suptitle("Clean-condition full-factorial results", fontsize=9.5, fontweight="regular", y=1.01)
+    fig.tight_layout(w_pad=2.0)
     save_figure(fig, "figure_04_clean_heatmaps.png")
 
 
 def plot_noise_curves(noise_agg: pd.DataFrame, configurations: list[tuple[int, int]]) -> None:
-    fig, ax = plt.subplots(figsize=(10, 5.8))
-    palette = [COLORS["dark"], COLORS["blue"], COLORS["teal"], COLORS["orange"], COLORS["red"]]
+    fig, ax = plt.subplots(figsize=(7.2, 3.9))
+    palette = [COLORS["neutral_black"], COLORS["blue_main"], COLORS["blue_mid"], COLORS["teal"], COLORS["red"]]
     for color, (fs, bits) in zip(palette, configurations):
         subset = noise_agg[
             (noise_agg["target_fs_hz"] == fs) & (noise_agg["bits"] == bits)
         ].sort_values("snr_db")
+        is_recommended = (fs, bits) == (360, 6)
         ax.plot(
             subset["snr_db"],
             subset["pooled_f1_pct"],
             marker="o",
-            lw=2,
+            ms=3.6,
+            lw=1.35 if is_recommended else 0.95,
             label=f"{fs} Hz / {bits} bit",
             color=color,
+            alpha=1.0 if is_recommended else 0.72,
         )
+        if is_recommended or (fs, bits) == (100, 6):
+            last = subset.iloc[-1]
+            offset = 0.12 if is_recommended else -0.35
+            ax.text(
+                last["snr_db"] + 0.25,
+                last["pooled_f1_pct"] + offset,
+                f"{fs}/{bits}",
+                fontsize=6.4,
+                color=color,
+                va="center",
+            )
     ax.set_xlabel("Motion-artifact SNR (dB)")
     ax.set_ylabel("Pooled F1 (%)")
-    ax.set_title("R-peak detection robustness under standardized motion artifact")
-    ax.grid(True)
-    ax.legend(frameon=False, ncol=2)
+    ax.set_title("R-peak detection robustness under standardized motion artifact", pad=5)
+    ax.set_ylim(max(0, noise_agg["pooled_f1_pct"].min() - 2), 101)
+    ax.set_xlim(noise_agg["snr_db"].min() - 0.6, noise_agg["snr_db"].max() + 2.2)
+    style_axis(ax, grid_axis="y")
+    ax.legend(ncol=3, loc="lower right", handlelength=1.8, columnspacing=0.9)
+    add_panel_label(ax, "a")
     save_figure(fig, "figure_05_noise_robustness.png")
 
 
 def plot_pareto(candidates: pd.DataFrame, chosen: dict) -> None:
-    fig, ax = plt.subplots(figsize=(10, 6.2))
+    fig, ax = plt.subplots(figsize=(7.2, 4.25))
     scatter = ax.scatter(
         candidates["raw_bitrate_bps"],
         candidates["pooled_f1_pct"],
         c=candidates["target_fs_hz"],
-        s=45 + 10 * (candidates["bits"] - 6),
-        cmap="viridis",
-        alpha=0.85,
+        s=28 + 7 * (candidates["bits"] - 6),
+        cmap="YlGnBu",
+        alpha=0.88,
         edgecolor="white",
         linewidth=0.5,
+    )
+    ax.axhline(99.0, color=COLORS["neutral_mid"], lw=0.8, ls="--")
+    ax.text(
+        candidates["raw_bitrate_bps"].min(),
+        99.03,
+        "F1 threshold",
+        fontsize=6.5,
+        color=COLORS["neutral_mid"],
+        va="bottom",
     )
     ax.scatter(
         [chosen["raw_bitrate_bps"]],
         [chosen["pooled_f1_pct"]],
         marker="*",
-        s=280,
+        s=180,
         color=COLORS["red"],
-        edgecolor=COLORS["dark"],
+        edgecolor=COLORS["neutral_black"],
         linewidth=0.8,
         label="Recommended",
         zorder=5,
@@ -519,32 +617,39 @@ def plot_pareto(candidates: pd.DataFrame, chosen: dict) -> None:
     ax.annotate(
         f"{int(chosen['target_fs_hz'])} Hz / {int(chosen['bits'])} bit",
         (chosen["raw_bitrate_bps"], chosen["pooled_f1_pct"]),
-        xytext=(10, -25),
+        xytext=(10, -20),
         textcoords="offset points",
-        fontsize=9,
-        arrowprops=dict(arrowstyle="->", color=COLORS["red"]),
+        fontsize=7,
+        color=COLORS["red"],
+        arrowprops=dict(arrowstyle="->", color=COLORS["red"], lw=0.8),
     )
     ax.set_xlabel("Raw single-channel data rate (bit/s)")
     ax.set_ylabel("Clean-condition pooled F1 (%)")
-    ax.set_title("Performance-resource trade-off")
-    ax.grid(True)
-    ax.legend(frameon=False)
-    fig.colorbar(scatter, ax=ax, label="Sampling rate (Hz)")
+    ax.set_title("Performance-resource trade-off", pad=5)
+    ax.set_ylim(95.8, 99.65)
+    style_axis(ax, grid_axis="y")
+    ax.legend(loc="lower right")
+    cbar = fig.colorbar(scatter, ax=ax, label="Sampling rate (Hz)", pad=0.02)
+    style_colorbar(cbar)
+    add_panel_label(ax, "a")
     save_figure(fig, "figure_06_pareto_tradeoff.png")
 
 
 def plot_noise_degradation_heatmap(noise_agg: pd.DataFrame) -> None:
     lowest = noise_agg[noise_agg["snr_db"] == noise_agg["snr_db"].min()]
     matrix = lowest.pivot(index="target_fs_hz", columns="bits", values="pooled_f1_pct").sort_index(ascending=False)
-    fig, ax = plt.subplots(figsize=(8.4, 5.6))
-    image = ax.imshow(matrix.to_numpy(), aspect="auto", cmap="viridis")
+    fig, ax = plt.subplots(figsize=(5.8, 3.65))
+    image = ax.imshow(matrix.to_numpy(), aspect="auto", cmap="YlGnBu", vmin=matrix.to_numpy().min(), vmax=matrix.to_numpy().max())
     ax.set_xticks(range(len(matrix.columns)), matrix.columns)
     ax.set_yticks(range(len(matrix.index)), matrix.index)
     ax.set_xlabel("Effective resolution (bit)")
     ax.set_ylabel("Sampling rate (Hz)")
-    ax.set_title(f"Severe motion artifact: pooled F1 at {noise_agg['snr_db'].min():.0f} dB")
-    annotate_heatmap(ax, matrix, ".2f")
-    fig.colorbar(image, ax=ax, label="F1 (%)")
+    ax.set_title(f"Severe motion artifact: pooled F1 at {noise_agg['snr_db'].min():.0f} dB", pad=5)
+    style_axis(ax, grid_axis=False)
+    annotate_heatmap(ax, matrix, ".2f", image)
+    cbar = fig.colorbar(image, ax=ax, label="F1 (%)", pad=0.02)
+    style_colorbar(cbar)
+    add_panel_label(ax, "a")
     save_figure(fig, "figure_07_severe_noise_heatmap.png")
 
 
@@ -570,24 +675,37 @@ def plot_record_distribution(clean: pd.DataFrame, chosen: dict) -> None:
         for label in selected["configuration"].unique()
     ]
     labels = list(selected["configuration"].unique())
-    fig, ax = plt.subplots(figsize=(9, 5.5))
-    box = ax.boxplot(groups, tick_labels=labels, patch_artist=True, widths=0.55)
-    for patch, color in zip(box["boxes"], [COLORS["dark"], COLORS["teal"]]):
+    fig, ax = plt.subplots(figsize=(6.4, 3.9))
+    box = ax.boxplot(
+        groups,
+        tick_labels=["Reference\n360/11", "Recommended\n360/6"],
+        patch_artist=True,
+        widths=0.48,
+        medianprops=dict(color=COLORS["neutral_black"], linewidth=1.0),
+        whiskerprops=dict(color=COLORS["neutral_dark"], linewidth=0.8),
+        capprops=dict(color=COLORS["neutral_dark"], linewidth=0.8),
+        flierprops=dict(marker="o", markerfacecolor="none", markeredgecolor=COLORS["neutral_mid"], markersize=3),
+    )
+    for patch, color in zip(box["boxes"], [COLORS["blue_soft"], COLORS["teal"]]):
         patch.set_facecolor(color)
-        patch.set_alpha(0.75)
+        patch.set_alpha(0.72)
+        patch.set_edgecolor(COLORS["neutral_dark"])
+        patch.set_linewidth(0.8)
     for index, values in enumerate(groups, start=1):
-        jitter = np.linspace(-0.12, 0.12, len(values))
+        jitter = np.linspace(-0.10, 0.10, len(values))
         ax.scatter(
             np.full(len(values), index) + jitter,
             values,
-            s=13,
-            color=COLORS["gray"],
-            alpha=0.55,
+            s=9,
+            color=COLORS["neutral_dark"],
+            alpha=0.42,
             zorder=3,
         )
     ax.set_ylabel("Per-record F1 (%)")
-    ax.set_title("Record-level performance distribution")
-    ax.grid(True, axis="y")
+    ax.set_title("Record-level performance distribution", pad=5)
+    ax.set_ylim(max(90, selected["f1_pct"].min() - 1), 100.4)
+    style_axis(ax, grid_axis="y")
+    add_panel_label(ax, "a")
     save_figure(fig, "figure_08_record_distribution.png")
 
 

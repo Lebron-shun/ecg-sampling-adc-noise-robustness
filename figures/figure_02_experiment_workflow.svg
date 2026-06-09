@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="422.416353pt" height="158.544pt" viewBox="0 0 422.416353 158.544" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-06-09T08:56:47.956935</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 158.544 
+L 422.416353 158.544 
+L 422.416353 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="text_1">
+    <g id="patch_2">
+     <path d="M 7.2 80.998727 
+L 60.057766 80.998727 
+Q 62.335766 80.998727 62.335766 78.720727 
+L 62.335766 65.408873 
+Q 62.335766 63.130873 60.057766 63.130873 
+L 7.2 63.130873 
+Q 4.922 63.130873 4.922 65.408873 
+L 4.922 78.720727 
+Q 4.922 80.998727 7.2 80.998727 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(7.2 70.204608)">MIT-BIH / NSTDB</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(16.686258 77.389102)">public ECG</text>
+   </g>
+   <g id="patch_3">
+    <path d="M 54.107314 72.0648 
+Q 63.426066 72.0648 71.85039 72.0648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 68.65039 70.4648 
+L 71.85039 72.0648 
+L 68.65039 73.6648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_2">
+    <g id="patch_4">
+     <path d="M 78.330439 80.949733 
+L 108.116127 80.949733 
+Q 110.394127 80.949733 110.394127 78.671733 
+L 110.394127 65.457867 
+Q 110.394127 63.179867 108.116127 63.179867 
+L 78.330439 63.179867 
+Q 76.052439 63.179867 76.052439 65.457867 
+L 76.052439 78.671733 
+Q 76.052439 80.949733 78.330439 80.949733 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(78.330439 70.253602)">Band-limit</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(78.700509 77.340108)">0.5-40 Hz</text>
+   </g>
+   <g id="patch_5">
+    <path d="M 113.701714 72.0648 
+Q 123.020466 72.0648 131.44479 72.0648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 128.24479 70.4648 
+L 131.44479 72.0648 
+L 128.24479 73.6648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_3">
+    <g id="patch_6">
+     <path d="M 136.433566 80.988991 
+L 169.2018 80.988991 
+Q 171.4798 80.988991 171.4798 78.710991 
+L 171.4798 65.497125 
+Q 171.4798 63.219125 169.2018 63.219125 
+L 136.433566 63.219125 
+Q 134.155566 63.219125 134.155566 65.497125 
+L 134.155566 78.710991 
+Q 134.155566 80.988991 136.433566 80.988991 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(139.040284 70.214344)">Anti-alias</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(136.433566 77.30085)">resampling</text>
+   </g>
+   <g id="patch_7">
+    <path d="M 173.296114 72.0648 
+Q 182.614866 72.0648 191.03919 72.0648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 187.83919 70.4648 
+L 191.03919 72.0648 
+L 187.83919 73.6648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_4">
+    <g id="patch_8">
+     <path d="M 194.346684 80.988991 
+L 230.477481 80.988991 
+Q 232.755481 80.988991 232.755481 78.710991 
+L 232.755481 65.340094 
+Q 232.755481 63.062094 230.477481 63.062094 
+L 194.346684 63.062094 
+Q 192.068684 63.062094 192.068684 65.340094 
+L 192.068684 78.710991 
+Q 192.068684 80.988991 194.346684 80.988991 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(194.538262 70.214344)">Fixed-range</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(194.346684 77.379366)">quantization</text>
+   </g>
+   <g id="patch_9">
+    <path d="M 232.890514 72.0648 
+Q 242.209266 72.0648 250.63359 72.0648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 247.43359 70.4648 
+L 250.63359 72.0648 
+L 247.43359 73.6648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_5">
+    <g id="patch_10">
+     <path d="M 253.390428 80.949733 
+L 290.622538 80.949733 
+Q 292.900537 80.949733 292.900537 78.671733 
+L 292.900537 65.457867 
+Q 292.900537 63.179867 290.622538 63.179867 
+L 253.390428 63.179867 
+Q 251.112428 63.179867 251.112428 65.457867 
+L 251.112428 78.671733 
+Q 251.112428 80.949733 253.390428 80.949733 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(253.390428 70.253602)">Fixed XQRS</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(258.411241 77.340108)">detection</text>
+   </g>
+   <g id="patch_11">
+    <path d="M 292.484914 72.0648 
+Q 301.803666 72.0648 310.22799 72.0648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 307.02799 70.4648 
+L 310.22799 72.0648 
+L 307.02799 73.6648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_6">
+    <g id="patch_12">
+     <path d="M 305.902195 80.949733 
+L 357.29957 80.949733 
+Q 359.57757 80.949733 359.57757 78.671733 
+L 359.57757 65.457867 
+Q 359.57757 63.179867 357.29957 63.179867 
+L 305.902195 63.179867 
+Q 303.624195 63.179867 303.624195 65.457867 
+L 303.624195 78.671733 
+Q 303.624195 80.949733 305.902195 80.949733 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(314.656164 70.253602)">One-to-one</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(305.902195 77.340108)">annotation match</text>
+   </g>
+   <g id="patch_13">
+    <path d="M 352.079314 72.0648 
+Q 361.398066 72.0648 369.82239 72.0648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+    <path d="M 366.62239 70.4648 
+L 369.82239 72.0648 
+L 366.62239 73.6648 
+" style="fill: none; stroke: #3775ba; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_7">
+    <g id="patch_14">
+     <path d="M 367.174212 80.949733 
+L 415.216353 80.949733 
+Q 417.494353 80.949733 417.494353 78.671733 
+L 417.494353 65.457867 
+Q 417.494353 63.179867 415.216353 63.179867 
+L 367.174212 63.179867 
+Q 364.896212 63.179867 364.896212 65.457867 
+L 364.896212 78.671733 
+Q 364.896212 80.949733 367.174212 80.949733 
+z
+" style="fill: #f7f8fa; stroke: #3775ba; stroke-width: 0.8; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(377.514197 70.253602)">Metrics +</text>
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; fill: #272727" transform="translate(367.174212 77.340108)">Pareto selection</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 6.7px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #767676" x="212.412083" y="134.04672" transform="rotate(-0 212.412083 134.04672)">Full factorial design: 5 sampling rates x 6 effective resolutions; clean and standardized motion-artifact evaluation</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 9px; font-family: 'Arial', 'Helvetica', 'Microsoft YaHei', 'SimHei', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #272727" x="11.532083" y="14.072546" transform="rotate(-0 11.532083 14.072546)">a</text>
+   </g>
+  </g>
+ </g>
+</svg>
