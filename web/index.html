@@ -42,7 +42,7 @@
             <span>48条MIT-BIH记录</span>
             <span>12条NSTDB噪声记录</span>
             <span>30组全因子配置</span>
-            <span>8张结果图</span>
+            <span>9张结果图</span>
           </div>
         </div>
         <div class="hero-panel" aria-label="推荐配置摘要">
@@ -105,7 +105,7 @@
           <article>
             <span>Scenario</span>
             <strong>可穿戴ECG长时监护</strong>
-            <p>聚焦R峰检测和RR间期监测，不外推临床诊断或形态学判读。</p>
+            <p>聚焦R峰、RR间期、心率趋势和HRV技术可用性，不外推临床诊断或形态学判读。</p>
           </article>
           <article>
             <span>Design</span>
@@ -125,7 +125,7 @@
           <article>
             <span>Metrics</span>
             <strong>性能、码率与鲁棒性</strong>
-            <p>综合Clean F1、R峰时间误差、原始码率和不同SNR下的性能退化。</p>
+            <p>综合Clean F1、R峰时间误差、RR/HR误差、原始码率和不同SNR下的性能退化。</p>
           </article>
           <article>
             <span>Result</span>
@@ -135,7 +135,7 @@
           <article>
             <span>Artifacts</span>
             <strong>报告、代码与结果图</strong>
-            <p>提供PDF/DOCX报告、复现实验脚本、结果表和8张实验图。</p>
+            <p>提供PDF/DOCX报告、复现实验脚本、结果表和9张实验图。</p>
           </article>
           <article>
             <span>Open Source</span>
@@ -148,6 +148,26 @@
           <a href="../report/final_report.docx">DOCX报告</a>
           <a href="../README.md" target="_blank" rel="noreferrer">项目README</a>
           <a href="https://github.com/Lebron-shun/ecg-sampling-adc-noise-robustness" target="_blank" rel="noreferrer">GitHub仓库</a>
+        </div>
+      </section>
+
+      <section class="monitoring-section" aria-label="医学监护场景">
+        <div class="section-intro">
+          <div>
+            <p class="eyebrow">Monitoring Scenarios</p>
+            <h2>把R峰检测结果延伸到RR、心率和HRV监护指标</h2>
+          </div>
+          <p>
+            这里展示不同监护目标下的配置建议和适用边界。HRV仅作为采集参数对节律指标影响的技术分析，不解释疾病风险。
+          </p>
+        </div>
+        <div class="scenario-grid" id="scenarioCards"></div>
+        <div class="monitoring-bench">
+          <div>
+            <p class="eyebrow">Selected Monitoring Metrics</p>
+            <h3 id="monitoringTitle">当前配置监护指标</h3>
+          </div>
+          <div class="monitoring-grid" id="monitoringDetails"></div>
         </div>
       </section>
 
@@ -272,7 +292,7 @@
           <div class="figure-stage" id="figureStage">
             <img
               id="figureImage"
-              src="../figures/figure_04_clean_heatmaps.svg"
+              src="../figures/figure_04_clean_heatmaps.png"
               alt="实验结果图"
               decoding="async"
               fetchpriority="high"

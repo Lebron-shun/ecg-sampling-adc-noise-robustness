@@ -1,7 +1,7 @@
 {
   "passed": true,
-  "checks_passed": 17,
-  "checks_total": 17,
+  "checks_passed": 20,
+  "checks_total": 20,
   "recommended_configuration": {
     "target_fs_hz": 360,
     "bits": 6,
@@ -44,17 +44,27 @@
     {
       "requirement": "Required result figures",
       "passed": true,
-      "evidence": "8/8 figures exist"
+      "evidence": "9/9 figures exist"
+    },
+    {
+      "requirement": "Monitoring extension outputs",
+      "passed": true,
+      "evidence": "monitoring_summary_rows=7, monitoring_metric_rows=336, scenarios=5"
+    },
+    {
+      "requirement": "Figure 9 editable export set",
+      "passed": true,
+      "evidence": "figure_09_monitoring_metrics exported as PNG/SVG/PDF with SVG text elements"
     },
     {
       "requirement": "Final PDF report and visual content",
       "passed": true,
-      "evidence": "pages=13, nonempty_pages=13, sha256=fbd1db8dc8070cccfc918026da4d9badd83956387aaff78800f9eba393b42658"
+      "evidence": "pages=15, nonempty_pages=15, sha256=7636cc61d4b53ffc664608ab221b0794c19390328d323305cc8c3aab91f87f72"
     },
     {
       "requirement": "Editable DOCX report",
       "passed": true,
-      "evidence": "paragraphs=117, tables=12, embedded_images=8, sha256=ad6b8a88716d220885d4e8e9f23bec69d61dfb9cb5ced93a84ea49ce8b97b7fe"
+      "evidence": "paragraphs=129, tables=14, embedded_images=9, sha256=3a2ef2cf06470b2f0dd3eb9b9d55f2d70b8954a47aca25ab680437f9a930d3b5"
     },
     {
       "requirement": "No raw personal-info placeholders in generated reports",
@@ -64,7 +74,12 @@
     {
       "requirement": "Numbered tables and figures in report",
       "passed": true,
-      "evidence": "tables=8/8, figures=8/8"
+      "evidence": "tables=10/10, figures=9/9"
+    },
+    {
+      "requirement": "RR/HRV monitoring methods and boundaries in report",
+      "passed": true,
+      "evidence": "Report includes RR/HR/SDNN/RMSSD methodology and keeps non-diagnostic boundary"
     },
     {
       "requirement": "Appendix engineering package coverage",
@@ -79,22 +94,22 @@
     {
       "requirement": "Reproducible source code",
       "passed": true,
-      "evidence": "8 required scripts, config.json, and requirements.txt present"
+      "evidence": "10 required scripts, config.json, and requirements.txt present"
     },
     {
-      "requirement": "Course-guide scoring coverage",
+      "requirement": "Course-guide report coverage",
       "passed": true,
       "evidence": "All required course-report sections and appendices found in generated report text"
     },
     {
-      "requirement": "README course scoring and showcase entry",
+      "requirement": "README monitoring and showcase entry",
       "passed": true,
-      "evidence": "README highlights scoring alignment, report, audit, and GitHub Pages entry"
+      "evidence": "README highlights monitoring extension, report, audit, and GitHub Pages entry"
     },
     {
       "requirement": "Interactive web project showcase and figure performance",
       "passed": true,
-      "evidence": "web/index.html presents the project, not scoring; figure gallery preloads decoded images"
+      "evidence": "web/index.html presents monitoring scenarios, not scoring; figure gallery preloads decoded PNG images"
     }
   ]
 }

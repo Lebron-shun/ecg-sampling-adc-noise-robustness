@@ -1,0 +1,78 @@
+[
+  {
+    "id": "hr_rr_monitoring",
+    "title": "HR/RR long-term monitoring",
+    "title_zh": "HR/RR 长时监护",
+    "status": "recommended",
+    "config": {
+      "target_fs_hz": 360,
+      "bits": 6,
+      "label": "360 Hz / 6 bit"
+    },
+    "evidence": [
+      "Clean F1 99.305%",
+      "原始码率 2160 bit/s",
+      "RR误差中位数 0.00 ms",
+      "心率误差中位数 0.000 bpm",
+      "连续RR对比例 99.73%",
+      "SNR>=6 dB最坏F1下降 0.353 pp"
+    ],
+    "boundary": "适合心率与RR间期趋势监护，不作为诊断系统。"
+  },
+  {
+    "id": "hrv_trend",
+    "title": "HRV trend observation",
+    "title_zh": "HRV 趋势观察",
+    "status": "caution",
+    "config": null,
+    "evidence": [
+      "没有低数据率配置同时满足全部HRV趋势阈值。"
+    ],
+    "boundary": "HRV仅作为技术信号质量指标，不解释疾病风险。"
+  },
+  {
+    "id": "motion_noise",
+    "title": "Motion/noise-priority monitoring",
+    "title_zh": "运动/噪声优先监护",
+    "status": "recommended",
+    "config": {
+      "target_fs_hz": 360,
+      "bits": 7,
+      "label": "360 Hz / 7 bit"
+    },
+    "evidence": [
+      "Clean F1 99.378%",
+      "原始码率 2520 bit/s",
+      "SNR>=6 dB最坏F1下降 0.065 pp"
+    ],
+    "boundary": "适合把标准运动伪影鲁棒性放在最低码率之前的场景。"
+  },
+  {
+    "id": "low_bitrate_teaching",
+    "title": "Ultra-low-bitrate teaching/static exploration",
+    "title_zh": "极低数据率教学/静息探索",
+    "status": "limited",
+    "config": {
+      "target_fs_hz": 125,
+      "bits": 6,
+      "label": "125 Hz / 6 bit"
+    },
+    "evidence": [
+      "Clean F1 98.743%",
+      "原始码率 750 bit/s",
+      "SNR>=6 dB最坏F1下降 7.835 pp"
+    ],
+    "boundary": "可用于展示参数权衡，不适合运动场景或鲁棒监护。"
+  },
+  {
+    "id": "clinical_diagnosis",
+    "title": "ST morphology / clinical diagnosis",
+    "title_zh": "ST/形态/临床诊断",
+    "status": "out_of_scope",
+    "config": null,
+    "evidence": [
+      "本项目不评价ST段、形态诊断、心律失常分类或临床决策。"
+    ],
+    "boundary": "设计范围外。"
+  }
+]

@@ -16,6 +16,7 @@ __pycache__/
 # Generated local scratch files
 tmp/
 temp/
+results/monitoring_cache/
 *.log
 *.tmp
 *_screenshot*.png

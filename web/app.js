@@ -9,14 +9,15 @@ const metrics = {
 };
 
 const figures = [
-  ["系统框图", "../figures/figure_01_system_diagram.svg", "虚拟可穿戴ECG采集与R峰检测系统框图。"],
-  ["实验流程", "../figures/figure_02_experiment_workflow.svg", "数据下载、预处理、重采样、量化、检测和统计分析流程。"],
-  ["波形对比", "../figures/figure_03_waveform_comparison.svg", "不同采样率和ADC位数下的代表性ECG波形。"],
-  ["Clean热力图", "../figures/figure_04_clean_heatmaps.svg", "干净条件下30种配置的全因子性能热力图。"],
-  ["抗噪曲线", "../figures/figure_05_noise_robustness.svg", "标准运动伪影条件下的SNR鲁棒性评估。"],
-  ["Pareto权衡", "../figures/figure_06_pareto_tradeoff.svg", "检测性能与原始数据率之间的Pareto权衡。"],
-  ["严重噪声", "../figures/figure_07_severe_noise_heatmap.svg", "低SNR场景下不同配置的失效风险。"],
-  ["记录分布", "../figures/figure_08_record_distribution.svg", "逐记录性能分布与异常记录情况。"],
+  ["系统框图", "../figures/figure_01_system_diagram.png", "虚拟可穿戴ECG采集与R峰检测系统框图。"],
+  ["实验流程", "../figures/figure_02_experiment_workflow.png", "数据下载、预处理、重采样、量化、检测和统计分析流程。"],
+  ["波形对比", "../figures/figure_03_waveform_comparison.png", "不同采样率和ADC位数下的代表性ECG波形。"],
+  ["Clean热力图", "../figures/figure_04_clean_heatmaps.png", "干净条件下30种配置的全因子性能热力图。"],
+  ["抗噪曲线", "../figures/figure_05_noise_robustness.png", "标准运动伪影条件下的SNR鲁棒性评估。"],
+  ["Pareto权衡", "../figures/figure_06_pareto_tradeoff.png", "检测性能与原始数据率之间的Pareto权衡。"],
+  ["严重噪声", "../figures/figure_07_severe_noise_heatmap.png", "低SNR场景下不同配置的失效风险。"],
+  ["记录分布", "../figures/figure_08_record_distribution.png", "逐记录性能分布与异常记录情况。"],
+  ["监护指标", "../figures/figure_09_monitoring_metrics.png", "代表配置下RR、瞬时心率和HRV技术指标的对比。"],
 ];
 
 const state = {
@@ -28,8 +29,20 @@ const state = {
 };
 
 const el = (id) => document.getElementById(id);
-const fmt = (value, digits = 2) => Number(value).toFixed(digits);
+const fmt = (value, digits = 2) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number.toFixed(digits) : "--";
+};
 const figureCache = new Map();
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function configKey(row) {
   return `${Number(row.target_fs_hz)} Hz / ${Number(row.bits)} bit`;
@@ -37,6 +50,10 @@ function configKey(row) {
 
 function findCandidate(fs, bits) {
   return DATA.candidates.find((row) => Number(row.target_fs_hz) === Number(fs) && Number(row.bits) === Number(bits));
+}
+
+function findMonitoring(fs, bits) {
+  return (DATA.monitoring || []).find((row) => Number(row.target_fs_hz) === Number(fs) && Number(row.bits) === Number(bits));
 }
 
 function formatMetric(value, metricKey) {
@@ -82,6 +99,68 @@ function renderSelected() {
   ];
   el("selectedDetails").innerHTML = cards
     .map(([label, value]) => `<div class="detail-card"><span>${label}</span><strong>${value}</strong></div>`)
+    .join("");
+}
+
+function renderMonitoring() {
+  const row = findMonitoring(state.fs, state.bits);
+  const title = el("monitoringTitle");
+  const details = el("monitoringDetails");
+  if (!title || !details) return;
+
+  title.textContent = `${Number(state.fs)} Hz / ${Number(state.bits)} bit 监护指标`;
+  if (!row) {
+    details.innerHTML = `<div class="monitoring-empty">该配置未纳入RR/HRV代表性扩展分析。</div>`;
+    return;
+  }
+
+  const cards = [
+    ["RR误差中位数", `${fmt(row.rr_median_abs_error_ms, 2)} ms`],
+    ["RR误差P95", `${fmt(row.rr_p95_abs_error_ms, 2)} ms`],
+    ["心率误差中位数", `${fmt(row.hr_median_abs_error_bpm, 3)} bpm`],
+    ["心率误差P95", `${fmt(row.hr_p95_abs_error_bpm, 3)} bpm`],
+    ["连续RR对比例", `${fmt(row.valid_rr_pair_pct, 2)}%`],
+    ["SDNN相对误差", `${fmt(row.sdnn_relative_error_median_pct, 2)}%`],
+    ["RMSSD相对误差", `${fmt(row.rmssd_relative_error_median_pct, 2)}%`],
+    ["HRV可用记录比例", `${fmt(row.hrv_usable_record_pct, 1)}%`],
+  ];
+  details.innerHTML = cards
+    .map(([label, value]) => `<div class="monitoring-card"><span>${label}</span><strong>${value}</strong></div>`)
+    .join("");
+}
+
+function scenarioStatus(status) {
+  const labels = {
+    recommended: "推荐",
+    caution: "谨慎",
+    limited: "限定",
+    out_of_scope: "范围外",
+  };
+  return labels[status] || status || "未定";
+}
+
+function renderScenarios() {
+  const root = el("scenarioCards");
+  if (!root) return;
+  const scenarios = DATA.scenarios || [];
+  if (!scenarios.length) {
+    root.innerHTML = `<article class="scenario-card"><span class="scenario-status caution">待生成</span><h3>监护场景数据尚未生成</h3><p>运行监护扩展分析后，这里会显示不同应用目标下的配置建议。</p></article>`;
+    return;
+  }
+  root.innerHTML = scenarios
+    .map((scenario) => {
+      const config = scenario.config || {};
+      const hasConfig = Number.isFinite(Number(config.target_fs_hz)) && Number.isFinite(Number(config.bits));
+      const evidence = (scenario.evidence || []).slice(0, 3);
+      const attrs = hasConfig ? ` data-fs="${Number(config.target_fs_hz)}" data-bits="${Number(config.bits)}"` : "";
+      return `<article class="scenario-card ${scenario.status || ""}"${attrs}>
+        <span class="scenario-status ${scenario.status || ""}">${escapeHtml(scenarioStatus(scenario.status))}</span>
+        <h3>${escapeHtml(scenario.title_zh || scenario.title)}</h3>
+        <strong>${escapeHtml(config.label || "不适用")}</strong>
+        <ul>${evidence.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        <p>${escapeHtml(scenario.boundary || "")}</p>
+      </article>`;
+    })
     .join("");
 }
 
@@ -270,6 +349,7 @@ function updateAll() {
   el("metricSelect").value = state.metric;
   el("tableFilter").value = state.tableFilter;
   renderSelected();
+  renderMonitoring();
   renderHeatmap();
   renderNoiseChart();
   renderTable();
@@ -306,6 +386,14 @@ function bindEvents() {
     state.bits = Number(target.dataset.bits);
     updateAll();
   });
+  el("scenarioCards")?.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-fs][data-bits]");
+    if (!target) return;
+    state.fs = Number(target.dataset.fs);
+    state.bits = Number(target.dataset.bits);
+    updateAll();
+    el("selectedTitle")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
   el("figureTabs").addEventListener("click", (event) => {
     const target = event.target.closest("button");
     if (!target) return;
@@ -316,6 +404,7 @@ function bindEvents() {
 setOptions();
 renderHero();
 renderFigures();
+renderScenarios();
 preloadFigures();
 bindEvents();
 updateAll();

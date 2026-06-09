@@ -47,6 +47,12 @@ def main() -> None:
     noise_agg = pd.read_csv(RESULTS_DIR / "aggregate_noise_by_snr.csv")
     candidates = pd.read_csv(RESULTS_DIR / "candidate_summary.csv")
     recommended = json.loads((RESULTS_DIR / "recommended_config.json").read_text(encoding="utf-8"))
+    monitoring_path = RESULTS_DIR / "monitoring_summary.csv"
+    monitoring_metrics_path = RESULTS_DIR / "monitoring_metrics.csv"
+    scenarios_path = RESULTS_DIR / "scenario_recommendations.json"
+    monitoring = pd.read_csv(monitoring_path) if monitoring_path.exists() else pd.DataFrame()
+    monitoring_metrics = pd.read_csv(monitoring_metrics_path) if monitoring_metrics_path.exists() else pd.DataFrame()
+    scenarios = json.loads(scenarios_path.read_text(encoding="utf-8")) if scenarios_path.exists() else []
 
     checks.append(
         check(
@@ -128,12 +134,46 @@ def main() -> None:
         (6, "pareto_tradeoff"),
         (7, "severe_noise_heatmap"),
         (8, "record_distribution"),
+        (9, "monitoring_metrics"),
     ]]
     checks.append(
         check(
             "Required result figures",
             all(path.exists() and path.stat().st_size > 20_000 for path in expected_figures),
-            f"{sum(path.exists() for path in expected_figures)}/8 figures exist",
+            f"{sum(path.exists() for path in expected_figures)}/9 figures exist",
+        )
+    )
+    checks.append(
+        check(
+            "Monitoring extension outputs",
+            monitoring_path.exists()
+            and monitoring_metrics_path.exists()
+            and scenarios_path.exists()
+            and len(monitoring) == 7
+            and len(monitoring_metrics) == 48 * 7
+            and monitoring[["target_fs_hz", "bits"]].drop_duplicates().shape[0] == 7
+            and all(keyword in monitoring.columns for keyword in [
+                "rr_median_abs_error_ms",
+                "hr_median_abs_error_bpm",
+                "valid_rr_pair_pct",
+                "sdnn_relative_error_median_pct",
+                "rmssd_relative_error_median_pct",
+                "hrv_usable_record_pct",
+            ])
+            and len(scenarios) >= 5,
+            f"monitoring_summary_rows={len(monitoring)}, monitoring_metric_rows={len(monitoring_metrics)}, scenarios={len(scenarios)}",
+        )
+    )
+    checks.append(
+        check(
+            "Figure 9 editable export set",
+            all(
+                (FIGURES_DIR / f"figure_09_monitoring_metrics.{suffix}").exists()
+                and (FIGURES_DIR / f"figure_09_monitoring_metrics.{suffix}").stat().st_size > 5_000
+                for suffix in ["png", "svg", "pdf"]
+            )
+            and "<text" in (FIGURES_DIR / "figure_09_monitoring_metrics.svg").read_text(encoding="utf-8", errors="ignore"),
+            "figure_09_monitoring_metrics exported as PNG/SVG/PDF with SVG text elements",
         )
     )
     pdf_path = REPORT_DIR / "final_report.pdf"
@@ -157,7 +197,7 @@ def main() -> None:
     checks.append(
         check(
             "Editable DOCX report",
-            len(doc.paragraphs) >= 90 and len(doc.tables) >= 8 and len(images) >= 8,
+            len(doc.paragraphs) >= 90 and len(doc.tables) >= 10 and len(images) >= 9,
             f"paragraphs={len(doc.paragraphs)}, tables={len(doc.tables)}, embedded_images={len(images)}, sha256={sha256(docx_path)}",
         )
     )
@@ -173,14 +213,22 @@ def main() -> None:
             "Generated MD/PDF/DOCX use 提交前填写 instead of underline placeholders",
         )
     )
-    expected_table_labels = [f"表{index}" for index in range(1, 9)]
-    expected_figure_labels = [f"图{index}" for index in range(1, 9)]
+    expected_table_labels = [f"表{index}" for index in range(1, 11)]
+    expected_figure_labels = [f"图{index}" for index in range(1, 10)]
     checks.append(
         check(
             "Numbered tables and figures in report",
             all(label in combined_report_text for label in expected_table_labels + expected_figure_labels),
-            f"tables={sum(label in combined_report_text for label in expected_table_labels)}/8, "
-            f"figures={sum(label in combined_report_text for label in expected_figure_labels)}/8",
+            f"tables={sum(label in combined_report_text for label in expected_table_labels)}/10, "
+            f"figures={sum(label in combined_report_text for label in expected_figure_labels)}/9",
+        )
+    )
+    checks.append(
+        check(
+            "RR/HRV monitoring methods and boundaries in report",
+            all(keyword in combined_report_text for keyword in ["RR间期", "瞬时心率", "SDNN", "RMSSD", "HRV技术可用性", "不解释疾病风险"])
+            and all(keyword in combined_report_text for keyword in ["不能外推到ST段分析", "不能外推到", "临床决策"]),
+            "Report includes RR/HR/SDNN/RMSSD methodology and keeps non-diagnostic boundary",
         )
     )
     checks.append(
@@ -204,6 +252,8 @@ def main() -> None:
         "validate_data.py",
         "run_experiments.py",
         "analyze_results.py",
+        "monitoring_analysis.py",
+        "build_web_data.py",
         "build_report.py",
         "build_pdf.py",
         "audit_project.py",
@@ -220,7 +270,7 @@ def main() -> None:
     )
     checks.append(
         check(
-            "Course-guide scoring coverage",
+            "Course-guide report coverage",
             all(
                 keyword in combined_report_text
                 for keyword in ["医学应用背景", "系统设计原理", "方法与实现过程", "结果展示与性能评价", "讨论与改进分析", "参考文献", "附录A", "附录D"]
@@ -232,21 +282,23 @@ def main() -> None:
     web_text = (PROJECT_ROOT / "web" / "index.html").read_text(encoding="utf-8")
     checks.append(
         check(
-            "README course scoring and showcase entry",
-            all(keyword in readme_text for keyword in ["课程评分对照", "GitHub Pages", "FINAL_AUDIT.md", "report/final_report.pdf"])
+            "README monitoring and showcase entry",
+            all(keyword in readme_text for keyword in ["RR/HRV", "GitHub Pages", "FINAL_AUDIT.md", "report/final_report.pdf", "monitoring_analysis.py"])
             and "https://lebron-shun.github.io/ecg-sampling-adc-noise-robustness/" in readme_text,
-            "README highlights scoring alignment, report, audit, and GitHub Pages entry",
+            "README highlights monitoring extension, report, audit, and GitHub Pages entry",
         )
     )
     web_js = (PROJECT_ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    web_data = (PROJECT_ROOT / "web" / "data.js").read_text(encoding="utf-8")
     checks.append(
         check(
             "Interactive web project showcase and figure performance",
-            all(keyword in web_text for keyword in ["Project Overview", "项目概览与交付物", "PDF报告", "项目README", "GitHub仓库"])
+            all(keyword in web_text for keyword in ["Project Overview", "Monitoring Scenarios", "医学监护场景", "PDF报告", "项目README", "GitHub仓库"])
             and all(keyword in web_text for keyword in ["可穿戴ECG长时监护", "采样率 × ADC位数", "MIT-BIH与NSTDB", "实验图集"])
-            and all(keyword in web_js for keyword in ["preloadFigures", "decode", "figureCache", "selectFigure"])
+            and all(keyword in web_js for keyword in ["preloadFigures", "decode", "figureCache", "selectFigure", "renderScenarios", "renderMonitoring"])
+            and all(keyword in web_data for keyword in ["monitoring", "scenarios", "hr_rr_monitoring", "hrv_trend"])
             and all(keyword not in web_text for keyword in ["Course Rubric", "课程评分对照", "5分", "6分", "17/17"]),
-            "web/index.html presents the project, not scoring; figure gallery preloads decoded images",
+            "web/index.html presents monitoring scenarios, not scoring; figure gallery preloads decoded PNG images",
         )
     )
 
